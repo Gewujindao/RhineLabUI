@@ -1,4 +1,8 @@
-import content from "../content/wanxiang-archives.json" with { type: "json" };
+import originalContent from "../content/archives.json" with { type: "json" };
+import wanxiangContent from "../content/wanxiang-archives.json" with { type: "json" };
+
+// Node archive tools do not provide Vite's import.meta.env.
+const content = import.meta.env?.MODE === "wanxiang" ? wanxiangContent : originalContent;
 
 export interface ArchiveRecord {
   id: string;
