@@ -2,6 +2,7 @@ import * as THREE from "three";
 import { glassRevealGLSL, frostedTransmissionGLSL, FROSTED_ROUGHNESS } from "./glass-reveal.ts";
 import { internalOpticsFragment } from "./internal-optics.ts";
 import { themeMaterial } from "./theme-material";
+import { isWanxiang } from "./wallpaper";
 
 type Surface = THREE.MeshPhysicalMaterial;
 type Palette = { high: Surface; low?: Surface };
@@ -23,6 +24,7 @@ export class CardAppearance {
     for (const child of group.children) {
       const mesh = child as THREE.Mesh;
       const name = mesh.userData.surface as string;
+      if (isWanxiang && name === "Moulded_Lettering") mesh.visible = false;
       const palette = this.palettes.get(name);
       if (!palette) {
         mesh.userData.themeAmount = themeMaterial(mesh.material as THREE.Material, "Printed_Canvas");
