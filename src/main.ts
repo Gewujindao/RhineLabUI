@@ -237,9 +237,9 @@ const entry = !isWanxiang && !isWallpaper && !reviewEntry && (prefs.sound || pre
   cancel: () => audio.cancelEntry(),
   start: silent => completeStartup(silent),
 }) : undefined;
-if (entry) {
+if (entry || isWanxiang) {
   audio.holdForEntry();
-  if (prefs.music) void audio.prepareMusic().catch(() => { /* Entry offers retry. */ });
+  if (prefs.music) void audio.prepareMusic().catch(() => { /* Startup handles audio readiness. */ });
 }
 const openingInteraction = isWanxiang ? new OpeningInteraction(
   $("#viewport"),
@@ -413,6 +413,7 @@ function finishBoot() {
   setMode("archive");
   wanxiangHost.complete();
   if (isWanxiang) {
+    audio.setHostPaused(true);
     // The opening ends here; only the game host owns the next player surface.
     $("#viewport").inert = true;
     if (document.activeElement instanceof HTMLElement) document.activeElement.blur();
@@ -1174,9 +1175,18 @@ async function start() {
     select(0);
     if (entry) entry.ready();
     else {
-      if (isWallpaper) {
-        // CEF allows automatic audio; never block the visual on audio policy or decoding.
-        await Promise.race([audio.unlock(), new Promise(resolve => setTimeout(resolve, 3000))]);
+      if (isWallpaper || (isWanxiang && (prefs.sound || prefs.music))) {
+        // Automatic hosts prepare the original audio before starting its timeline.
+        let timer: ReturnType<typeof setTimeout> | undefined;
+        const unlocked = await Promise.race([
+          audio.unlock(),
+          new Promise<boolean>(resolve => { timer = setTimeout(() => resolve(false), 3000); }),
+        ]).finally(() => clearTimeout(timer));
+        if (openingDisposed) return;
+        if (isWanxiang && !unlocked) {
+          audio.cancelEntry();
+          throw new Error(audio.stats().error || "Opening audio did not become ready.");
+        }
       }
       completeStartup(false);
     }
