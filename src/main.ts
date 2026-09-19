@@ -32,6 +32,7 @@ import { TerminalAudio } from "./audio";
 import { audioSettingsMarkup } from "./audio-settings";
 import { OpeningInteraction, StartupGate } from "./startup";
 import { isWanxiang, isWallpaper, wallpaperHost, wallpaperFrame, type WallpaperProperties } from "./wallpaper";
+import { wanxiangHost } from "./wanxiang-host";
 import "./startup.css";
 import "./wallpaper.css";
 import { Workbench } from "./workbench";
@@ -111,6 +112,9 @@ let mode: Mode = "boot",
   lastStep = "",
   ready = false;
 let openingPresentation: "entry" | "full" = "entry";
+let openingDisposed = false;
+let animationFrame: number | undefined;
+let loadingTimer: ReturnType<typeof setTimeout> | undefined;
 let modal: "search" | "saved" | "settings" | null = null,
   searchQuery = "",
   filter = categories[0];
@@ -328,6 +332,7 @@ function fit() {
   updateQualitySummary();
   // Re-measure line covers and tab underline after wrapping changes.
   requestAnimationFrame(() => {
+    if (openingDisposed) return;
     documentDecryption.refresh();
     const tab = document.querySelector<HTMLElement>(".detail-tabs button.active");
     const indicator = document.querySelector<HTMLElement>(".tab-indicator");
@@ -406,7 +411,13 @@ function finishBoot(destination: "archive" | "detail" = "archive") {
   // setMode owns the same visual reset and audio cue/effect cleanup for both
   // natural completion and an interrupted opening.
   setMode(destination);
-  if (isWanxiang && destination === "archive") $(".read-file").focus({ preventScroll: true });
+  wanxiangHost.complete();
+  if (wanxiangHost.waitingForHome) {
+    // Keep rendering the settled array while the parent prepares the real Home.
+    // Neither the finishing gesture nor later input may open a lesson here.
+    $("#viewport").inert = true;
+    if (document.activeElement instanceof HTMLElement) document.activeElement.blur();
+  } else if (isWanxiang && destination === "archive") $(".read-file").focus({ preventScroll: true });
 }
 function select(index: number, navigation?: ArchiveNavigation) {
   selected = (index + records.length) % records.length;
@@ -498,7 +509,7 @@ function updateSelection(navigation?: ArchiveNavigation) {
   $("#saved-count").textContent = String(saved.size).padStart(2, "0");
 }
 function replayBoot(forcePreview = false) {
-  if (!ready) return;
+  if (!ready || openingDisposed || wanxiangHost.waitingForHome) return;
   closeModal(() => replayBootAfterModal(forcePreview));
 }
 function replayBootAfterModal(forcePreview: boolean) {
@@ -518,7 +529,7 @@ function replayBootAfterModal(forcePreview: boolean) {
   if (!forcePreview) audio.play("ui-tick");
 }
 function openFile() {
-  if (!ready) return;
+  if (!ready || openingDisposed || wanxiangHost.waitingForHome) return;
   closeModal(() => {
     setMode("detail");
     audio.play("open");
@@ -760,6 +771,7 @@ document.addEventListener("change", (e) => {
   }
 });
 document.addEventListener("click", (e) => {
+  if (openingDisposed || wanxiangHost.waitingForHome) return;
   const themeButton = (e.target as Element).closest<HTMLElement>("[data-color-theme]");
   if (themeButton) { prefs.colorTheme = themeButton.dataset.colorTheme === "dark" ? "dark" : "light"; savePrefs(); return; }
   if (!started || (isWanxiang && mode === "boot")) return;
@@ -858,7 +870,7 @@ document.addEventListener("click", (e) => {
   }
 });
 document.addEventListener("keydown", (e) => {
-  if (!started || (isWanxiang && mode === "boot")) return;
+  if (openingDisposed || wanxiangHost.waitingForHome || !started || (isWanxiang && mode === "boot")) return;
   if (viewer?.isOpen) return;
   if (playground?.active && !modal) {
     if (e.key === "Escape") { e.preventDefault(); playground.stop(); }
@@ -1007,8 +1019,9 @@ let lastTime = 0,
   frameStart = performance.now(),
   fps = 0;
 function frame(ms: number) {
-  if (!wallpaperFrame(ms)) { requestAnimationFrame(frame); return; }
-  if (document.hidden) { requestAnimationFrame(frame); return; }
+  if (openingDisposed) return;
+  if (!wallpaperFrame(ms)) { animationFrame = requestAnimationFrame(frame); return; }
+  if (document.hidden) { animationFrame = requestAnimationFrame(frame); return; }
   workbench?.tick();
   const time = ms / 1000;
   const theme = scene?.themeAmount ?? (prefs.colorTheme === "dark" ? 1 : 0);
@@ -1052,16 +1065,16 @@ function frame(ms: number) {
     $("#three-scene").dataset.fps = String(Math.round(fps));
     $("#three-scene").dataset.renderStats = JSON.stringify(scene?.getStats() ?? { loaded: false, drawCalls: 0, triangles: 0 });
   }
-  requestAnimationFrame(frame);
+  animationFrame = requestAnimationFrame(frame);
 }
 function bindScene(scene: ArchiveScene, cell?: { lane: number; row: number }) {
     scene.select(selected, cell ? { cell } : undefined);
     scene.onSelect = (i, cell) => {
-      if (mode !== "archive" || modal || viewer?.isOpen) return;
+      if (wanxiangHost.waitingForHome || mode !== "archive" || modal || viewer?.isOpen) return;
       select(i, cell ? { cell } : undefined);
     };
     scene.onNavigate = (axis, direction) => {
-      if (mode !== "archive" || modal || viewer?.isOpen) return;
+      if (wanxiangHost.waitingForHome || mode !== "archive" || modal || viewer?.isOpen) return;
       if (axis === "lane") stepColumn(direction);
       else stepFile(direction);
     };
@@ -1159,8 +1172,12 @@ async function start() {
       threeState = "off";
       syncThreeButton();
     }
+    const startupScene = scene;
     await Promise.all([
-      scene?.load(),
+      startupScene?.load().finally(() => {
+        // A removed iframe must not retain resources that finished loading late.
+        if (openingDisposed) startupScene?.dispose();
+      }),
       loadBootWebfonts(),
       // With unicode-range faces, preload the opening's actual characters,
       // not every font shard. Other archive text loads on demand.
@@ -1169,6 +1186,7 @@ async function start() {
         `${Object.values(bootCopy).join(" ")} ${initialRecord.title} ${initialRecord.category} 0123456789`,
       )),
     ]);
+    if (openingDisposed) return;
     if (scene) bindScene(scene);
     savePrefs();
     ready = true;
@@ -1182,13 +1200,16 @@ async function start() {
       completeStartup(false);
     }
   } catch (error) {
+    if (openingDisposed) return;
     console.error(error);
+    wanxiangHost.error(error);
+    if (wanxiangHost.mode) disposeHostedOpening();
     $("#loading").innerHTML =
       '<div class="error-state"><strong>CONNECTION INTERRUPTED</strong><p>三维档案资源未能载入。请确认浏览器已启用硬件加速，然后重新连接。</p><button onclick="location.reload()">RECONNECT →</button></div>';
   }
 }
 function completeStartup(silent: boolean) {
-  if (started || !ready) return;
+  if (openingDisposed || started || !ready) return;
   started = true;
   if (silent) {
     prefs.sound = false;
@@ -1197,11 +1218,12 @@ function completeStartup(silent: boolean) {
   }
   audio.releaseEntry();
   audio.restartBoot();
-  openingPresentation = "entry";
+  openingPresentation = wanxiangHost.mode === "preview" ? "full" : "entry";
   const fade = prefs.reduced ? 0 : 600;
   bootStart = performance.now() / 1000 - (reviewParams.has("time") ? Number(reviewParams.get("time")) : 1.76);
   if (!reviewParams.has("time")) bootStart += fade / 1000;
   setMode("boot");
+  wanxiangHost.ready();
   if (reviewParams.get("scene") === "archive" || (prefs.reduced && !reviewParams.has("time"))) {
     if (isWanxiang) finishBoot();
     else setMode("archive");
@@ -1212,18 +1234,19 @@ function completeStartup(silent: boolean) {
   if (mobileEntry) mobileEntry.inert = false;
   loading.classList.add("loaded");
   loading.inert = true;
-  setTimeout(() => {
+  loadingTimer = setTimeout(() => {
+    if (openingDisposed) return;
     const restoreFocus = loading.contains(document.activeElement) || document.activeElement === document.body;
     loading.remove();
     if (entry && restoreFocus) {
       const skip = $("#skip");
       const target = mode === "boot" ? skip.getClientRects().length ? skip : $(".mobile-entry") : $(".read-file");
       target.focus({ preventScroll: true });
-    } else if (isWanxiang && restoreFocus && mode === "archive") {
+    } else if (isWanxiang && !wanxiangHost.waitingForHome && restoreFocus && mode === "archive") {
       $(".read-file").focus({ preventScroll: true });
     }
   }, fade);
-  requestAnimationFrame(frame);
+  animationFrame = requestAnimationFrame(frame);
   // Do not compete with entry audio/font downloads. Full offline installation
   // begins after startup is complete and remains atomic.
   if (!isWanxiang) setTimeout(() => void initPwa(notify), 1500);
@@ -1335,5 +1358,30 @@ Object.assign(window, {
     }),
   },
 });
-if (import.meta.hot) import.meta.hot.dispose(() => { openingInteraction?.dispose(); audio.dispose(); });
+function disposeHostedOpening() {
+  if (openingDisposed) return;
+  openingDisposed = true;
+  wanxiangHost.dispose();
+  if (animationFrame !== undefined) cancelAnimationFrame(animationFrame);
+  clearTimeout(loadingTimer);
+  clearTimeout(toastTimer);
+  openingInteraction?.dispose();
+  detailTransition.dispose();
+  modalTransition?.dispose();
+  tabTransition.cancel();
+  bookmarkFeedback?.cancel();
+  viewer?.dispose();
+  viewer = undefined;
+  scene?.dispose();
+  scene = undefined;
+  audio.dispose();
+}
+if (wanxiangHost.mode) {
+  window.addEventListener("pagehide", disposeHostedOpening, { once: true });
+  window.addEventListener("unload", disposeHostedOpening, { once: true });
+}
+if (import.meta.hot) import.meta.hot.dispose(() => {
+  if (wanxiangHost.mode) disposeHostedOpening();
+  else { openingInteraction?.dispose(); audio.dispose(); }
+});
 
