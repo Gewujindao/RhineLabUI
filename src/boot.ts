@@ -1,5 +1,5 @@
 import { bootMotion } from "./boot-motion";
-import { bootMarkContour } from "./brand";
+import { bootCopy, brandText } from "./brand";
 import { themeAmount } from "./theme-ui";
 import { BootLettering } from "./boot-lettering";
 
@@ -13,10 +13,15 @@ const arc = (r: number, start: number, sweep: number, x = 960, y = 540) => {
 
 export class BootSequence {
   private nodes: Map<string, HTMLElement> = new Map();
-  private contour: SVGPathElement;
+  private markStrokes: {
+    node: SVGGeometryElement;
+    start: number;
+    span: number;
+    width: number;
+  }[];
   private letters: SVGTextElement;
-  private plus: SVGPathElement;
-  private minus: SVGPathElement;
+  private captions: SVGTextElement[];
+  private logoRule: SVGPathElement;
   private brandLines: HTMLElement[];
   private scanPaths: SVGPathElement[];
   private orbitDots: SVGCircleElement[];
@@ -49,24 +54,40 @@ export class BootSequence {
       ".boot-white",
     ].forEach((s) => this.nodes.set(s, stage.querySelector<HTMLElement>(s)!));
     const mark = stage.querySelector<SVGSVGElement>(".boot-logo svg")!;
-    const original = mark.querySelector("path")!;
-    this.contour = original;
-    this.contour.setAttribute("d", bootMarkContour);
-    this.contour.setAttribute("pathLength", "1");
-    const symbols = mark.querySelector("path:not([pathLength])")!;
-    this.plus = document.createElementNS(ns, "path");
-    this.plus.setAttribute("d", "M44 70h50M69 45v50");
-    this.minus = document.createElementNS(ns, "path");
-    this.minus.setAttribute("d", "M219 70h44");
-    [this.plus, this.minus].forEach((p) => {
-      p.setAttribute("stroke", "currentColor");
-      p.setAttribute("stroke-width", "15");
-      mark.insertBefore(p, symbols);
+    const markGroup = mark.querySelector("g")!;
+    // The canonical baseline path contains separate absolute-M subpaths. Keep
+    // their original data, but give each a dash origin so the trace traverses
+    // the actual rings, baseline strokes and observation needle in order.
+    markGroup.querySelectorAll("path").forEach((path) => {
+      const parts = path.getAttribute("d")!.match(/[Mm][^Mm]*/g)!;
+      if (parts.length === 1) return;
+      parts.forEach((d) => {
+        const segment = path.cloneNode() as SVGPathElement;
+        segment.setAttribute("d", d);
+        path.before(segment);
+      });
+      path.remove();
     });
-    symbols.remove();
-    this.letters = mark.querySelector("text")!;
-    this.letters.setAttribute("text-anchor", "start");
-    this.letters.setAttribute("x", "20");
+    const geometry = Array.from(markGroup.querySelectorAll<SVGGeometryElement>("circle, path"));
+    const lengths = geometry.map((node) => node.getTotalLength());
+    const total = lengths.reduce((sum, length) => sum + length, 0);
+    let position = 0;
+    this.markStrokes = geometry.map((node, i) => {
+      node.setAttribute("pathLength", "1");
+      const stroke = {
+        node,
+        start: position / total,
+        span: lengths[i] / total,
+        width: Number(node.getAttribute("stroke-width") ?? "1"),
+      };
+      position += lengths[i];
+      return stroke;
+    });
+    const wordmarks = Array.from(mark.querySelectorAll<SVGTextElement>("text"));
+    this.letters = wordmarks[0];
+    this.captions = wordmarks.slice(1);
+    this.logoRule = mark.querySelector<SVGPathElement>(":scope > path")!;
+    this.logoRule.setAttribute("pathLength", "1");
     this.brandLines = Array.from(
       stage.querySelector(".brand")!.children,
     ) as HTMLElement[];
@@ -104,20 +125,16 @@ export class BootSequence {
       el.replaceChildren(ink);
     });
     this.poweredHTML = this.el(".powered").innerHTML;
-    new BootLettering(this.brandLines[0], ["brand"]).setText("RHINE LAB");
-    // Bind after collecting the original ring paths. Phrase artwork also has
-    // SVG paths, and must never be included in the scan's animated geometry.
-    this.accessLettering = new BootLettering(this.el(".access-text"), ["access"]);
-    this.authLettering = new BootLettering(this.el("#auth-message"), [
-      "identity", "request", "processing", "processingGlitch",
-    ]);
-    for (const [selector, key, text] of [
-      [".scan > span", "permission", "PERMISSION AUTHORIZED"],
-      [".welcome-heading", "welcome", "WELCOME TO"],
-      [".welcome-database", "database", "INTERNAL DATABASE"],
-    ] as const) new BootLettering(this.el(selector), [key]).setText(text);
+    new BootLettering(this.brandLines[0]).setText(brandText.title);
+    this.accessLettering = new BootLettering(this.el(".access-text"));
+    this.authLettering = new BootLettering(this.el("#auth-message"));
+    for (const [selector, text] of [
+      [".scan > span", bootCopy.permission],
+      [".welcome-heading", bootCopy.welcome],
+      [".welcome-database", bootCopy.database],
+    ] as const) new BootLettering(this.el(selector)).setText(text);
     this.companyInk.forEach((el) =>
-      new BootLettering(el.querySelector("span")!, ["company"]).setText("RHINE LAB.LLC."),
+      new BootLettering(el.querySelector("span")!).setText(bootCopy.company),
     );
   }
   private el(selector: string) {
@@ -135,27 +152,15 @@ export class BootSequence {
     this.opacity(".boot-logo", s.logoOpacity);
     this.el(".boot-logo").style.transform =
       `translate(${s.logo.offsetX}px, 1px)`;
-    this.contour.style.strokeDasharray = `${s.logo.length} ${1 - s.logo.length}`;
-    this.contour.style.strokeDashoffset = String(-s.logo.start);
-    this.contour.setAttribute("stroke-width", String(s.logo.strokeWidth));
+    this.renderMark(s.logo);
     // Preserve the SVG text node once each revealed letter is in place. Replacing
     // it every frame invalidates glyph rasterization under the moving HUD.
     if (this.letters.textContent !== s.logoLetters)
       this.letters.textContent = s.logoLetters;
-    this.plus.style.opacity = this.minus.style.opacity =
-      s.logo.symbolScale > 0 ? "1" : "0";
-    this.plus.setAttribute(
-      "transform",
-      `translate(${s.logo.plusX} 70) rotate(${s.logo.plusAngle}) scale(${s.logo.symbolScale}) translate(-69 -70)`,
-    );
-    this.minus.setAttribute(
-      "d",
-      `M${-s.logo.minusWidth / 2} 0h${s.logo.minusWidth}`,
-    );
-    this.minus.setAttribute(
-      "transform",
-      `translate(${s.logo.minusX} 70) scale(${s.logo.symbolScale})`,
-    );
+    this.captions.forEach((caption) => {
+      caption.style.opacity = String(s.logo.symbolScale);
+    });
+    this.logoRule.style.strokeDasharray = `${s.logo.symbolScale} ${1 - s.logo.symbolScale}`;
     this.opacity(".auth-status", s.authOpacity);
     this.authLettering.setText(s.auth);
     this.opacity(".brand", 1);
@@ -166,7 +171,7 @@ export class BootSequence {
     });
     this.opacity(".powered", s.poweredLetters > 0);
     this.el(".powered").style.clipPath =
-      `inset(0 ${100 * (1 - s.poweredLetters / 19)}% 0 0)`;
+      `inset(0 ${100 * (1 - s.poweredLetters / bootCopy.powered.length)}% 0 0)`;
     this.opacity(".scan", s.scanVisible);
     if (s.scanVisible) this.renderScan(s);
     this.opacity(".welcome", s.welcomeVisible ? s.welcomeOpacity : 0);
@@ -193,6 +198,32 @@ export class BootSequence {
     this.el(".boot-background svg").style.transform =
       `translate(${Math.sin(t * 0.16) * 18}px, ${-(t - 6) * 5}px) scale(1.08)`;
     return s;
+  }
+  private renderMark(logo: ReturnType<typeof bootMotion>["logo"]) {
+    const start = ((logo.start % 1) + 1) % 1;
+    const end = start + logo.length;
+    const intervals = end > 1
+      ? [[0, end - 1], [start, 1]]
+      : [[start, end]];
+    this.markStrokes.forEach(({ node, start: origin, span, width }) => {
+      // Each dash pattern covers one unchanged canonical geometry. Intersect
+      // the cyclic global window with this geometry's share of the mark.
+      const dashes = [0];
+      let cursor = 0;
+      intervals.forEach(([from, to]) => {
+        const left = Math.max(from, origin);
+        const right = Math.min(to, origin + span);
+        if (right <= left) return;
+        const localStart = Math.max(0, Math.min(1, (left - origin) / span));
+        const localEnd = Math.max(0, Math.min(1, (right - origin) / span));
+        dashes.push(localStart - cursor, localEnd - localStart);
+        cursor = localEnd;
+      });
+      dashes.push(1 - cursor);
+      node.style.strokeDasharray = dashes.join(" ");
+      node.setAttribute("stroke-width", String(width * logo.strokeWidth / 26));
+      node.style.fillOpacity = String(logo.symbolScale);
+    });
   }
   private renderScan(s: ReturnType<typeof bootMotion>) {
     const { scan } = s,

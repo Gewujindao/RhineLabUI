@@ -1,7 +1,8 @@
 import { track } from "./boot-tracks";
 
-// Position along the single shared contour, unwrapped across its closing point.
-// These are the visible stroke's trailing/leading ends, not whole-logo opacity.
+// Normalized draw/erase positions, unwrapped across the closing point. The
+// renderer distributes this window over the canonical mark's own geometries.
+// The original temporal samples and public motion scalars remain unchanged.
 const draw = [
   [229, -0.02, -0.0198],
   [230, -0.0195, -0.011],

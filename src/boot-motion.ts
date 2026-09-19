@@ -3,6 +3,7 @@
 import { brandTrack, companyTrack, scanTrack, track } from "./boot-tracks";
 import { scanOrbitTrack } from "./boot-orbit-tracks";
 import { bootLogoTrack } from "./boot-logo-tracks";
+import { bootCopy, brandText } from "./brand";
 export const progress = (t: number, a: number, b: number) =>
   Math.max(0, Math.min(1, (t - a) / (b - a)));
 export const smooth = (p: number) => p * p * (3 - 2 * p);
@@ -36,14 +37,14 @@ export function bootMotion(appTime: number) {
             : "welcome";
   let auth = "";
   if (f < 363) {
-    auth = typed("ID CONFIRMED", f, 282, 295);
-    if (f >= 320) auth += " : " + typed("JOYCE MOORE", f, 321, 339);
-  } else if (f < 421) auth = typed("REQUEST RECEIVED", f, 367, 389);
+    auth = typed(bootCopy.identity, f, 282, 295);
+    if (f >= 320) auth += " : " + typed(bootCopy.identityDetail, f, 321, 339);
+  } else if (f < 421) auth = typed(bootCopy.request, f, 367, 389);
   else {
-    auth = typed("START PROCESSING", f, 423, 440);
+    auth = typed(bootCopy.processing, f, 423, 440);
     if (f >= 449)
       auth += ".".repeat(Math.min(3, 1 + Math.floor((f - 449) / 4)));
-    if (at(f, [479, 485, 486])) auth = "              SING...";
+    if (at(f, [479, 485, 486])) auth = bootCopy.processingGlitch;
   }
   const frame = t * 25;
   const scan = scanTrack(frame);
@@ -57,17 +58,19 @@ export function bootMotion(appTime: number) {
     f,
     step,
     auth,
-    access: "ACCESS PERMISSION REQUIRED".slice(
+    access: bootCopy.access.slice(
       0,
-      f < 170 ? 0 : accessCounts[Math.min(17, f - 170)],
+      f < 170 ? 0 : Math.ceil(
+        accessCounts[Math.min(17, f - 170)] / accessCounts[17] * bootCopy.access.length,
+      ),
     ),
     accessOpacity: f >= 170 && f < 227 ? (f === 226 ? 0.25 : 1) : 0,
     logoOpacity: t >= 9.16 && t < 19.48 ? 1 : 0,
     logo: bootLogoTrack(frame),
-    logoLetters: typed("RHINE·LAB", f, 232, 255),
+    logoLetters: typed(brandText.title, f, 232, 255),
     authOpacity: f >= 281 && f < 487 ? 1 : 0,
     brand: [0, 1, 2].map((line) => brandTrack(frame, line)),
-    poweredLetters: typed("POWERED BY RHINE LAB", f, 279, 295).length,
+    poweredLetters: typed(bootCopy.powered, f, 279, 295).length,
     scanVisible: t >= 19.48 && t < 22.76,
     scan,
     scanOrbit,
