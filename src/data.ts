@@ -1,4 +1,4 @@
-import content from "../content/archives.json" with { type: "json" };
+import content from "../content/wanxiang-archives.json" with { type: "json" };
 
 export interface ArchiveRecord {
   id: string;
@@ -12,6 +12,9 @@ export interface ArchiveRecord {
   abstract: string;
   findings: string[];
   source: string;
+  downloadPath?: string;
+  duration?: string;
+  prerequisiteLessonId?: string | null;
 }
 
 export const records: ArchiveRecord[] = content.records;

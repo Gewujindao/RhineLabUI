@@ -19,7 +19,7 @@ import { applyTextureQuality, resizeQuality } from "./quality-renderer";
 import { CardAppearance } from "./appearance";
 import { configureInternalOptics } from "./internal-optics";
 import { DecryptionController } from "./decryption";
-import { fileAtSlot, fileLocation } from "./data";
+import { archiveColumns, columnFiles, fileAtSlot, fileLocation } from "./data";
 import {
   cellKey,
   sameCell,
@@ -33,7 +33,8 @@ import {
   type ArchiveCell,
   type ArchiveNavigation,
 } from "./archive-loop";
-import { labelMarkSvg } from "./brand";
+import { labelMarkSvg, bootCopy } from "./brand";
+import { isWanxiang } from "./wallpaper";
 import { archiveFraming } from "./viewport-layout";
 import { ArchiveDrag, ArchivePlaneMomentum, type DragAxis, type DragProjection, type DragPosition } from "./archive-drag";
 import { assetUrl as publicAsset } from "./asset-url";
@@ -55,6 +56,14 @@ const ease = (t: number) => {
   t = THREE.MathUtils.clamp(t, 0, 1);
   return t * t * t * (t * (t * 6 - 15) + 10);
 };
+// Rebasing must retain the identity of every course, including returning
+// cards in columns with different lesson counts. Physical pool size is separate.
+const courseRowPeriod = archiveColumns.reduce((period, _, lane) => {
+  const count = columnFiles(lane).length;
+  let a = period, b = count;
+  while (b) [a, b] = [b, a % b];
+  return period / a * count;
+}, 1);
 export class ArchiveScene {
   private inputEvents = new AbortController();
   private presence = 1;
@@ -642,11 +651,11 @@ export class ArchiveScene {
     const shift = {
       lane:
         Math.abs(this.selectedCell.lane) > 2048
-          ? Math.round((this.selectedCell.lane - 2) / 5) * 5
+          ? Math.round((this.selectedCell.lane - 2) / archiveColumns.length) * archiveColumns.length
           : 0,
       row:
         Math.abs(this.selectedCell.row) > 2048
-          ? Math.floor((this.selectedCell.row - 12) / 8) * 8
+          ? Math.floor((this.selectedCell.row - 12) / courseRowPeriod) * courseRowPeriod
           : 0,
     };
     if (!shift.lane && !shift.row) return;
@@ -753,20 +762,20 @@ export class ArchiveScene {
     c.fillRect(12, 12, 1000, 6);
     c.fillRect(12, 419, 1000, 3);
     c.font = "bold 81px MiSans";
-    c.fillText("RHINE LAB, LLC.", 22, 116);
+    c.fillText(isWanxiang ? bootCopy.welcome : "RHINE LAB, LLC.", 22, 116);
     c.font = "32px MiSans";
     c.fillStyle = "#878476";
-    c.fillText("INTERNAL DATABASE", 25, 174);
+    c.fillText(isWanxiang ? archiveColumns[fileLocation(index).lane] : "INTERNAL DATABASE", 25, 174, 710);
     c.fillStyle = "#171713";
     c.font = "bold 130px MiSans";
     c.fillText("NO." + String(index + 1).padStart(3, "0"), 22, 360);
     c.fillRect(782, 32, 221, 39);
     c.fillStyle = "#eee9de";
     c.font = "24px MiSans";
-    c.fillText("R L / I S", 809, 61);
+    c.fillText(isWanxiang ? "讲义" : "R L / I S", 809, 61);
     c.fillStyle = "#171713";
     c.font = "bold 64px MiSans";
-    c.fillText("INFO", 830, 143);
+    c.fillText(isWanxiang ? "课程" : "INFO", 830, 143);
     c.drawImage(this.labelMark, 790, 242, 210, 98);
     this.labelTexture.needsUpdate = true;
   }

@@ -1,6 +1,11 @@
 import * as THREE from "three";
+import { isWanxiang } from "./wallpaper";
 
-const surfaces: Record<string, string> = {
+const surfaces: Record<string, string> = isWanxiang ? {
+  Frosted_Polymer: "#817763", Ivory_Edges: "#9b8c73", Optical_Diffuser: "#40392f",
+  Titanium_Fasteners: "#b4ab98", Index_Inlay: "#b88a35", Printed_Label: "#504638",
+  Subsurface_Optics: "#ada08a", Optical_Edges: "#d2c5a9", Carbon_Ink: "#d4c8ac",
+} : {
   Frosted_Polymer: "#626b70", Ivory_Edges: "#687277", Optical_Diffuser: "#192226",
   Titanium_Fasteners: "#b1b9bb", Index_Inlay: "#c6a36b", Printed_Label: "#303a3e",
   Subsurface_Optics: "#939e9f", Optical_Edges: "#bbc3bc", Carbon_Ink: "#b6bdb8",
@@ -39,7 +44,9 @@ export function themeMaterial(material: THREE.Material, name: string, instanced 
 
 type Baseline = { background: THREE.Color; fog?: THREE.Color; intensity: number; exposure: number; lights: { light: THREE.Light; intensity: number }[]; floor?: { material: THREE.MeshStandardMaterial; color: THREE.Color } };
 const scenes = new WeakMap<THREE.Scene, Baseline>();
-const background = new THREE.Color("#11181b"), floorColor = new THREE.Color("#192125"), mistColor = new THREE.Color("#263136");
+const background = new THREE.Color(isWanxiang ? "#35302a" : "#11181b"),
+  floorColor = new THREE.Color(isWanxiang ? "#40382f" : "#192125"),
+  mistColor = new THREE.Color(isWanxiang ? "#62584b" : "#263136");
 export function themeEnvironment(scene: THREE.Scene, renderer: THREE.WebGLRenderer, amount: number) {
   let baseline = scenes.get(scene);
   if (!baseline) {

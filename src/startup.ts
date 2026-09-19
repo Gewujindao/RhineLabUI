@@ -5,6 +5,64 @@ type EntryOptions = {
   start: (silent: boolean) => void;
 };
 
+/** Captures one opening gesture through its release, so it cannot open a file. */
+export class OpeningInteraction {
+  private events = new AbortController();
+  private pointer: { id: number; eligible: boolean; consumed: boolean } | undefined;
+  private heldKeys = new Set<string>();
+  private consumedKeys = new Set<string>();
+
+  constructor(root: HTMLElement, playing: () => boolean, finish: () => void) {
+    const options = { capture: true, signal: this.events.signal };
+    const consume = (event: Event) => {
+      event.preventDefault();
+      event.stopImmediatePropagation();
+    };
+    document.addEventListener("pointerdown", event => {
+      if (!event.isPrimary || event.button !== 0 || !root.contains(event.target as Node)) return;
+      const eligible = playing();
+      this.pointer = { id: event.pointerId, eligible, consumed: eligible };
+      if (eligible) event.stopImmediatePropagation();
+    }, options);
+    document.addEventListener("pointerup", event => {
+      if (this.pointer?.id === event.pointerId && this.pointer.consumed) event.stopImmediatePropagation();
+    }, options);
+    document.addEventListener("pointercancel", event => {
+      if (this.pointer?.id === event.pointerId) this.pointer = undefined;
+    }, options);
+    document.addEventListener("click", event => {
+      if (!root.contains(event.target as Node)) return;
+      const pointer = this.pointer;
+      this.pointer = undefined;
+      if (!playing() && !pointer?.consumed) return;
+      consume(event);
+      // A press that began while resources were loading cannot skip the newly
+      // started opening when its click arrives. Keyboard input is owned below.
+      if (playing() && pointer?.eligible) finish();
+    }, options);
+    document.addEventListener("keydown", event => {
+      if (!["Enter", " ", "Escape"].includes(event.key)) return;
+      const wasHeld = this.heldKeys.has(event.key);
+      this.heldKeys.add(event.key);
+      if (!playing() && !this.consumedKeys.has(event.key)) return;
+      consume(event);
+      this.consumedKeys.add(event.key);
+      if (playing() && !wasHeld && !event.repeat) finish();
+    }, options);
+    document.addEventListener("keyup", event => {
+      this.heldKeys.delete(event.key);
+      if (this.consumedKeys.delete(event.key)) consume(event);
+    }, options);
+    window.addEventListener("blur", () => {
+      this.pointer = undefined;
+      this.heldKeys.clear();
+      this.consumedKeys.clear();
+    }, { signal: this.events.signal });
+  }
+
+  dispose() { this.events.abort(); }
+}
+
 /** Owns the entry gesture, including keyboard focus and failed audio startup. */
 export class StartupGate {
   private state: "loading" | "waiting" | "starting" | "error" | "started" = "loading";
