@@ -63,9 +63,9 @@ $("#stage").innerHTML = `
   <div class="scene-atmosphere archive-atmosphere"></div>
   <div id="boot-background" class="boot-background"><svg viewBox="0 0 1920 1080" preserveAspectRatio="none"><g fill="none" stroke="#fff" stroke-width="3"><path d="M-210 705C-45 705 182 704 247 567C337 377 99 306 4 435S27 680 169 631C309 584 227 314 279 111S568-113 568-113"/><path d="M1560-80C1374 114 1671 168 1601 323S1371 367 1431 480S1692 666 1559 787S1329 886 1498 1130"/><circle cx="1450" cy="648" r="346"/><circle cx="1450" cy="648" r="348"/></g></svg></div>
   <header class="brand">${brandHeading}</header>
-  <nav class="system-nav" aria-label="系统导航">
-    <button data-action="search"><span class="nav-glyph">⌕</span> ${isWanxiang ? "讲义目录" : "ARCHIVE INDEX"} <span class="key">/</span></button>
-    <button data-action="saved" aria-label="查看收藏${archiveName}" title="收藏${archiveName}">＋ ${isWanxiang ? "收藏" : "SAVED"} <span id="saved-count">00</span></button>
+  <nav class="system-nav" aria-label="系统导航"${isWanxiang ? ' hidden style="display:none"' : ""}>
+    <button data-action="search"><span class="nav-glyph">⌕</span> ARCHIVE INDEX <span class="key">/</span></button>
+    <button data-action="saved" aria-label="查看收藏档案" title="收藏档案">＋ SAVED <span id="saved-count">00</span></button>
     <button class="settings-button" data-action="settings" aria-label="系统设置" title="系统设置"><span class="settings-glyph" aria-hidden="true">◷</span><span class="settings-label">设置</span></button>
   </nav>
   ${isWanxiang ? "" : '<button id="skip" class="skip" data-action="skip">ENTER SYSTEM <span>↗</span></button>'}
@@ -79,20 +79,20 @@ $("#stage").innerHTML = `
   <svg id="inspection-marks" viewBox="0 0 1920 1080" aria-hidden="true"><path id="inspection-lines"/><g id="inspection-corners"></g><circle id="inspection-point" r="1.8"/></svg>
   <div id="inspection-text" aria-hidden="true">${isWanxiang ? "课程：" : "CONFIDENTIALITY:"}<strong>${escapeHtml(isWanxiang ? initialRecord.category : "GENERAL BUSINESS USE")}</strong></div>
   <section id="archive-ui" class="archive-ui" aria-label="${archiveName}选择">
-    <div class="archive-callout"><div class="eyebrow">${archiveHeading} <span>／</span> <span id="archive-category">${escapeHtml(initialRecord.category)}</span></div><button class="file-title" data-action="open">${fileNumberLabel}<span id="selected-id">${isWanxiang ? "NO." : "X-"}<span id="selected-code">001</span></span><span class="file-open">↗</span></button><div class="callout-rule"><i></i></div><div class="file-summary"><span id="selected-title">${escapeHtml(initialRecord.title)}</span><span id="selected-clearance">${escapeHtml(isWanxiang ? initialRecord.duration ?? "" : initialRecord.clearance)}</span></div><button class="read-file" data-action="open">${isWanxiang ? "阅读讲义" : "ACCESS FILE"} <span>→</span></button></div>
+    <div class="archive-callout"><div class="eyebrow">${archiveHeading} <span>／</span> <span id="archive-category">${escapeHtml(initialRecord.category)}</span></div><button class="file-title" ${isWanxiang ? "disabled" : 'data-action="open"'}>${fileNumberLabel}<span id="selected-id">${isWanxiang ? "NO." : "X-"}<span id="selected-code">001</span></span>${isWanxiang ? "" : '<span class="file-open">↗</span>'}</button><div class="callout-rule"><i></i></div><div class="file-summary"><span id="selected-title">${escapeHtml(initialRecord.title)}</span><span id="selected-clearance">${escapeHtml(isWanxiang ? initialRecord.duration ?? "" : initialRecord.clearance)}</span></div><button class="read-file" data-action="open"${isWanxiang ? ' hidden style="display:none"' : ""}>ACCESS FILE <span>→</span></button></div>
     <div id="hover-label" class="hover-label" hidden>${isWanxiang ? "NO." : "X-"}<span id="hover-code">001</span> / <span id="hover-title"></span></div>
     <div class="archive-counter"><span class="tiny-label">${isWanxiang ? "讲义 / 当前课程" : "ARCHIVE / SELECT"}</span><div><span id="selected-number">01</span><i>/</i><span class="count-total">${columnFiles(0).length}</span></div></div>
-    <div class="archive-navigation"><button data-action="prev" aria-label="上一个档案">↑</button><div id="file-ticks" class="file-ticks"></div><button data-action="next" aria-label="下一个档案">↓</button></div>
-    <div class="column-navigation"><button data-action="column-prev" aria-label="${isWanxiang ? "上一课程" : "上一列"}">←</button><div><span id="column-number">${isWanxiang ? "课程" : "COLUMN"} <span id="column-index">01</span> / ${String(archiveColumns.length).padStart(2, "0")}</span><strong id="column-name">${escapeHtml(initialRecord.category)}</strong></div><button data-action="column-next" aria-label="${isWanxiang ? "下一课程" : "下一列"}">→</button></div>
-    <div class="archive-hint"><kbd>←</kbd> <kbd>→</kbd> 切换列 <span>／</span> <kbd>↑</kbd> <kbd>↓</kbd> 前后档案 <span>／</span> <kbd>ENTER</kbd> 读取</div>
+    <div class="archive-navigation"${isWanxiang ? ' hidden style="display:none"' : ""}><button data-action="prev" aria-label="上一个档案">↑</button><div id="file-ticks" class="file-ticks"></div><button data-action="next" aria-label="下一个档案">↓</button></div>
+    <div class="column-navigation"><button data-action="column-prev" aria-label="上一列"${isWanxiang ? ' hidden style="display:none"' : ""}>←</button><div><span id="column-number">${isWanxiang ? "课程" : "COLUMN"} <span id="column-index">01</span> / ${String(archiveColumns.length).padStart(2, "0")}</span><strong id="column-name">${escapeHtml(initialRecord.category)}</strong></div><button data-action="column-next" aria-label="下一列"${isWanxiang ? ' hidden style="display:none"' : ""}>→</button></div>
+    <div class="archive-hint"${isWanxiang ? ' hidden style="display:none"' : ""}><kbd>←</kbd> <kbd>→</kbd> 切换列 <span>／</span> <kbd>↑</kbd> <kbd>↓</kbd> 前后档案 <span>／</span> <kbd>ENTER</kbd> 读取</div>
   </section>
   <section id="detail-ui" class="detail-ui" aria-label="${archiveName}内容" hidden>
     <button class="back-button" data-action="back">← <span>${isWanxiang ? "讲义阵列" : "ARCHIVE OVERVIEW"}</span><small>ESC</small></button>
-    <div class="object-caption"><span id="object-id">NO.001</span><div>${archiveHeading}</div><small>DRAG TO INSPECT <span>↔</span></small><button class="viewer-open" data-action="model-viewer">360° 查看文档模型 <span>↗</span></button></div>
+    <div class="object-caption"><span id="object-id">NO.001</span><div>${archiveHeading}</div><small>DRAG TO INSPECT <span>↔</span></small>${isWanxiang ? "" : '<button class="viewer-open" data-action="model-viewer">360° 查看文档模型 <span>↗</span></button>'}</div>
     <article id="detail-content" class="detail-content"></article>
   </section>
   <div class="powered">${escapeHtml(bootCopy.powered)}<i></i></div>
-  <footer class="system-footer">${isWanxiang ? `<span>${records.length} 份讲义</span><span>${archiveColumns.length} 门课程</span>` : `<span><i class="status-light"></i> SESSION AUTHORIZED${isWallpaper ? '<button type="button" class="three-toggle" data-action="toggle-three" aria-pressed="true" title="卸载三维模型，保留 2D 界面">3D 开启</button>' : ''}</span><span>JOYCE MOORE <i>／</i> <span id="clock">00:00:00</span></span>`}<button data-action="replay" title="${isWanxiang ? "重播完整演出" : "重播启动流程"}">${isWanxiang ? "重播完整演出" : "REINITIALIZE"} ↗</button></footer>
+  <footer class="system-footer">${isWanxiang ? `<span>${records.length} 份讲义</span><span>${archiveColumns.length} 门课程</span>` : `<span><i class="status-light"></i> SESSION AUTHORIZED${isWallpaper ? '<button type="button" class="three-toggle" data-action="toggle-three" aria-pressed="true" title="卸载三维模型，保留 2D 界面">3D 开启</button>' : ''}</span><span>JOYCE MOORE <i>／</i> <span id="clock">00:00:00</span></span><button data-action="replay" title="重播启动流程">REINITIALIZE ↗</button>`}</footer>
   <div id="pwa-update-notice" class="pwa-update-notice" role="status" hidden><span>新版本已就绪</span><button data-pwa-action="update">更新并重启 ↻</button></div>
   <div id="modal-root"></div><div id="toast" class="toast" role="status"></div>
   <div id="loading" class="loading"><div class="loading-mark">${logo}</div><span>${isWanxiang ? "正在载入" : "CONNECTING TO INTERNAL DATABASE"}</span><i></i></div>
@@ -111,7 +111,6 @@ let mode: Mode = "boot",
   bootStart = 0,
   lastStep = "",
   ready = false;
-let openingPresentation: "entry" | "full" = "entry";
 let openingDisposed = false;
 let animationFrame: number | undefined;
 let loadingTimer: ReturnType<typeof setTimeout> | undefined;
@@ -124,7 +123,7 @@ let frozenTime =
   reviewParams.get("freeze") === "1"
     ? Number(reviewParams.get("time") ?? 0)
     : null;
-if (reviewParams.get("review") === "1") {
+if (!isWanxiang && reviewParams.get("review") === "1") {
   $("#stage").dataset.review = "true";
   window.addEventListener("message", (event) => {
     if (
@@ -352,6 +351,7 @@ $("#file-ticks").innerHTML = columnFiles(fileLocation(selected).lane)
 let fileTicks = [...$("#file-ticks").querySelectorAll<HTMLButtonElement>("button")];
 
 function setMode(next: Mode) {
+  if (isWanxiang && next === "detail") return;
   if (workbench?.enabled && next === "detail") next = "archive";
   const previousMode = mode;
   rollingTitles.forEach(title => title.update({ animated: !prefs.reduced && next === "archive" }));
@@ -403,21 +403,20 @@ function setMode(next: Mode) {
     }
   }
 }
-function finishBoot(destination: "archive" | "detail" = "archive") {
+function finishBoot() {
   if (!started || !ready || mode !== "boot") return;
   frozenTime = null;
   lastStep = "";
   bootStart = 0;
   // setMode owns the same visual reset and audio cue/effect cleanup for both
   // natural completion and an interrupted opening.
-  setMode(destination);
+  setMode("archive");
   wanxiangHost.complete();
-  if (wanxiangHost.waitingForHome) {
-    // Keep rendering the settled array while the parent prepares the real Home.
-    // Neither the finishing gesture nor later input may open a lesson here.
+  if (isWanxiang) {
+    // The opening ends here; only the game host owns the next player surface.
     $("#viewport").inert = true;
     if (document.activeElement instanceof HTMLElement) document.activeElement.blur();
-  } else if (isWanxiang && destination === "archive") $(".read-file").focus({ preventScroll: true });
+  }
 }
 function select(index: number, navigation?: ArchiveNavigation) {
   selected = (index + records.length) % records.length;
@@ -509,27 +508,22 @@ function updateSelection(navigation?: ArchiveNavigation) {
   $("#saved-count").textContent = String(saved.size).padStart(2, "0");
 }
 function replayBoot(forcePreview = false) {
-  if (!ready || openingDisposed || wanxiangHost.waitingForHome) return;
+  if (isWanxiang || !ready || openingDisposed) return;
   closeModal(() => replayBootAfterModal(forcePreview));
 }
 function replayBootAfterModal(forcePreview: boolean) {
-  openingPresentation = "full";
   bootStart = performance.now() / 1000 - 1.76;
   frozenTime = null;
   lastStep = "";
-  setMode("boot");
+  setMode(prefs.reduced && !forcePreview ? "archive" : "boot");
   audio.restartBoot();
-  if (!isWanxiang) selected = 0;
-  scene?.select(selected);
+  scene?.select(0);
+  selected = 0;
   updateSelection();
-  if (prefs.reduced && !forcePreview) {
-    if (isWanxiang) finishBoot();
-    else setMode("archive");
-  }
   if (!forcePreview) audio.play("ui-tick");
 }
 function openFile() {
-  if (!ready || openingDisposed || wanxiangHost.waitingForHome) return;
+  if (isWanxiang || !ready || openingDisposed) return;
   closeModal(() => {
     setMode("detail");
     audio.play("open");
@@ -540,13 +534,13 @@ function toggleSaved() {
   if (saved.has(id)) saved.delete(id);
   else saved.add(id);
   try {
-    localStorage.setItem(savedKey, JSON.stringify([...saved]));
+    localStorage.setItem("rhine-saved", JSON.stringify([...saved]));
   } catch {}
   $("#saved-count").textContent = String(saved.size).padStart(2, "0");
   const button = $<HTMLButtonElement>('[data-action="bookmark"]');
   const added = saved.has(id);
-  button.firstChild!.textContent = isWanxiang ? added ? "− 取消收藏" : "＋ 收藏讲义" : added ? "− REMOVE FROM SAVED" : "＋ SAVE ARCHIVE";
-  button.querySelector("span")!.textContent = added ? "已收藏" : `收藏${archiveName}`;
+  button.firstChild!.textContent = added ? "− REMOVE FROM SAVED" : "＋ SAVE ARCHIVE";
+  button.querySelector("span")!.textContent = added ? "已收藏" : "收藏档案";
   button.setAttribute("aria-pressed", String(added));
   bookmarkFeedback?.cancel();
   if (!prefs.reduced) bookmarkFeedback = button.animate(
@@ -554,27 +548,21 @@ function toggleSaved() {
     { duration: 220, easing: "ease-out" },
   );
   audio.play("confirm");
-  notify(saved.has(id) ? `${archiveName}已加入收藏` : "已取消收藏");
+  notify(saved.has(id) ? "档案已加入收藏" : "已取消收藏");
 }
 function renderDetail() {
   tabTransition.cancel();
   const r = records[selected];
-  const courseFiles = columnFiles(fileLocation(selected).lane);
-  const metadata = isWanxiang
-    ? `<div><dt>COURSE / 课程</dt><dd>${escapeHtml(r.category)}</dd></div>${r.duration ? `<div><dt>DURATION / 时长</dt><dd>${escapeHtml(r.duration)}</dd></div>` : ""}<div><dt>LESSON / 课程讲义</dt><dd>${courseFiles.indexOf(selected) + 1} / ${courseFiles.length}</dd></div>`
-    : `<div><dt>DEPARTMENT / 科室</dt><dd>${escapeHtml(r.department)}</dd></div><div><dt>COLLECTION / 编目范围</dt><dd>${escapeHtml(r.date)}</dd></div><div><dt>RELATED / 相关人物</dt><dd>${escapeHtml(r.lead)}</dd></div><div><dt>STATUS / 状态</dt><dd><i></i>${r.clearance === "RESTRICTED" ? "目录访问" : "已归档 · 可读取"}</dd></div>`;
-  const downloadPath = isWanxiang ? r.downloadPath : `archives/RHINE-LAB-${r.id}.txt`;
-  const source = isWanxiang ? assetUrl(r.source) : r.source;
   $("#object-id").textContent = "NO." + String(selected + 1).padStart(3, "0");
   $("#detail-content").innerHTML = `
-  <div class="detail-kicker"><span>${isWanxiang ? "LESSON" : "FILE"} ${escapeHtml(r.id)}</span>${isWanxiang || !r.clearance ? "" : `<span>${escapeHtml(r.clearance)}</span>`}</div>
-  <h2>${escapeHtml(isWanxiang ? r.title : r.en)}</h2><div class="detail-title-cn">${escapeHtml(isWanxiang ? r.category : r.title)}${isWanxiang ? "" : `<span>${escapeHtml(r.category)}</span>`}</div>
+  <div class="detail-kicker"><span>FILE ${r.id}</span><span>${escapeHtml(r.clearance)}</span></div>
+  <h2>${escapeHtml(r.en)}</h2><div class="detail-title-cn">${escapeHtml(r.title)}<span>${escapeHtml(r.category)}</span></div>
   <div class="detail-rule"></div>
-  <dl class="metadata">${metadata}</dl>
-  <div class="detail-tabs" role="tablist"><button id="tab-overview" class="active" role="tab" aria-controls="tab-panel" aria-selected="true" data-tab="overview">01 <span>概述</span></button><button id="tab-notes" role="tab" aria-controls="tab-panel" aria-selected="false" data-tab="notes">02 <span>${isWanxiang ? "讲义目录" : "研究记录"}</span></button><button id="tab-history" role="tab" aria-controls="tab-panel" aria-selected="false" data-tab="history">03 <span>${isWanxiang ? "本次阅读" : "访问日志"}</span></button><i class="tab-indicator" aria-hidden="true"></i></div>
+  <dl class="metadata"><div><dt>DEPARTMENT / 科室</dt><dd>${escapeHtml(r.department)}</dd></div><div><dt>COLLECTION / 编目范围</dt><dd>${escapeHtml(r.date)}</dd></div><div><dt>RELATED / 相关人物</dt><dd>${escapeHtml(r.lead)}</dd></div><div><dt>STATUS / 状态</dt><dd><i></i>${r.clearance === "RESTRICTED" ? "目录访问" : "已归档 · 可读取"}</dd></div></dl>
+  <div class="detail-tabs" role="tablist"><button id="tab-overview" class="active" role="tab" aria-controls="tab-panel" aria-selected="true" data-tab="overview">01 <span>概述</span></button><button id="tab-notes" role="tab" aria-controls="tab-panel" aria-selected="false" data-tab="notes">02 <span>研究记录</span></button><button id="tab-history" role="tab" aria-controls="tab-panel" aria-selected="false" data-tab="history">03 <span>访问日志</span></button><i class="tab-indicator" aria-hidden="true"></i></div>
   <div id="tab-panel" class="tab-panel" role="tabpanel">${overview()}</div>
-  <div class="detail-actions"><button class="solid-button" data-action="bookmark">${isWanxiang ? saved.has(r.id) ? "− 取消收藏" : "＋ 收藏讲义" : saved.has(r.id) ? "− REMOVE FROM SAVED" : "＋ SAVE ARCHIVE"}<span>${saved.has(r.id) ? "已收藏" : `收藏${archiveName}`}</span></button>${downloadPath ? `<a class="export-button" href="${escapeHtml(assetUrl(downloadPath))}" download="${escapeHtml(isWanxiang ? `${r.id}.txt` : `RHINE-LAB-${r.id}.txt`)}" aria-label="导出 ${escapeHtml(r.id)} ${archiveName}">${isWanxiang ? "下载全文" : "EXPORT"} <span>↓</span></a>` : ""}</div>
-  <div class="detail-footnote"><a href="${escapeHtml(source)}" target="_blank" rel="noopener">${isWanxiang ? "讲义原文" : "设定参考"} ↗</a><span>${String(selected + 1).padStart(3, "0")} / ${String(records.length).padStart(3, "0")}</span></div>`;
+  <div class="detail-actions"><button class="solid-button" data-action="bookmark">${saved.has(r.id) ? "− REMOVE FROM SAVED" : "＋ SAVE ARCHIVE"}<span>${saved.has(r.id) ? "已收藏" : "收藏档案"}</span></button><a class="export-button" href="${assetUrl(`archives/RHINE-LAB-${r.id}.txt`)}" download="RHINE-LAB-${r.id}.txt" aria-label="导出 ${r.id} 档案">EXPORT <span>↓</span></a></div>
+  <div class="detail-footnote"><a href="${escapeHtml(r.source)}" target="_blank" rel="noopener">设定参考 ↗</a><span>${String(selected + 1).padStart(3, "0")} / ${String(records.length).padStart(3, "0")}</span></div>`;
   $("#detail-content").setAttribute("tabindex", "-1");
   $('[data-action="bookmark"]').setAttribute("aria-pressed", String(saved.has(r.id)));
   documentDecryption.reset($("#detail-content"), prefs.reduced || !scene || scene.decryptionFrame.phase === "clear");
@@ -602,17 +590,17 @@ function setTab(tab: string, sound = true) {
     tab === "overview"
       ? overview()
       : tab === "notes"
-        ? `<div class="panel-label">${isWanxiang ? "CONTENTS / 讲义目录" : "RESEARCH NOTES / 研究记录"}</div><ol class="research-notes">${r.findings.map((f, i) => `<li><span>${String(i + 1).padStart(2, "0")}</span>${escapeHtml(f)}</li>`).join("")}</ol>`
+        ? `<div class="panel-label">RESEARCH NOTES / 研究记录</div><ol class="research-notes">${r.findings.map((f, i) => `<li><span>${String(i + 1).padStart(2, "0")}</span>${escapeHtml(f)}</li>`).join("")}</ol>`
         : `<div class="panel-label">ACCESS LOG / 本次访问</div>${accessLog
             .filter((entry) => entry.id === r.id)
             .slice(0, 4)
             .map(
               (entry) =>
-                `<div class="log-row"><span>${entry.time}</span><span>${isWanxiang ? escapeHtml(r.id) : "JOYCE MOORE"}</span><b>${isWanxiang ? "已打开" : "READ AUTHORIZED"}</b></div>`,
+                `<div class="log-row"><span>${entry.time}</span><span>JOYCE MOORE</span><b>READ AUTHORIZED</b></div>`,
             )
             .join(
               "",
-            )}${isWanxiang ? "" : '<p class="log-note">本次会话已通过身份验证。档案内容以当前终端可访问范围展示。</p>'}`;
+            )}<p class="log-note">本次会话已通过身份验证。档案内容以当前终端可访问范围展示。</p>`;
   $("#tab-panel").scrollTop = 0;
   documentDecryption.refresh();
   if (sound) {
@@ -628,7 +616,7 @@ function notify(message: string) {
 }
 
 function openModal(kind: NonNullable<typeof modal>) {
-  if (!ready) return;
+  if (isWanxiang || !ready) return;
   if (!modal) {
     previousFocus = document.activeElement as HTMLElement;
     modalSiblings = [...$("#stage").children]
@@ -639,7 +627,7 @@ function openModal(kind: NonNullable<typeof modal>) {
   modalClosing = false;
   modal = kind;
   searchQuery = "";
-  filter = categories[0];
+  filter = "全部档案";
   audio.play("page-open");
   renderModal();
 }
@@ -668,7 +656,7 @@ function renderModal() {
   if (!modal) return;
   modalTransition?.dispose();
   $("#modal-root").innerHTML =
-    `<div class="modal-backdrop"><section class="terminal-modal ${modal === "settings" ? "settings-modal" : ""}" role="dialog" aria-modal="true" aria-label="${modal === "settings" ? "系统设置" : modal === "saved" ? `收藏${archiveName}` : `${archiveName}检索`}"><div class="modal-top"><span>${isWanxiang ? escapeHtml(bootCopy.welcome) : "RHINE LAB"} / ${modal === "settings" ? "SYSTEM PREFERENCES" : isWanxiang ? "COURSE DIRECTORY" : "ARCHIVE DIRECTORY"}</span><button data-action="close-modal" aria-label="关闭窗口">${isWanxiang ? "关闭" : "CLOSE"} <span>×</span></button></div>${modal === "settings" ? settingsMarkup() : `<h2>${isWanxiang ? modal === "saved" ? "收藏讲义" : "讲义目录" : modal === "saved" ? "SAVED ARCHIVES" : "ARCHIVE INDEX"}${isWanxiang ? "" : `<small>${modal === "saved" ? "收藏档案" : "内部档案检索"}</small>`}</h2><div class="search-field"><span>⌕</span><input id="archive-search" type="search" autocomplete="off" placeholder="${isWanxiang ? "输入讲义编号、名称或课程" : "输入档案编号、名称或科室"}" aria-label="检索${archiveName}"/><span class="key">ESC</span></div><div class="category-filters">${categories.map((c, i) => `<button data-filter="${escapeHtml(c)}" class="${i === 0 ? "active" : ""}">${escapeHtml(c)}</button>`).join("")}</div><div class="result-header"><span>${isWanxiang ? "LESSON / 讲义" : "FILE / 档案"}</span><span>${isWanxiang ? "COURSE / 课程" : "DEPARTMENT / 科室"}</span><span>${isWanxiang ? "时长" : "ACCESS"}</span></div><div id="search-results" class="search-results"></div><div class="modal-bottom"><span id="result-count"></span>${isWanxiang ? "" : '<span>INTERNAL DATABASE <i>●</i> CONNECTED</span>'}</div>`}</section></div>`;
+    `<div class="modal-backdrop"><section class="terminal-modal ${modal === "settings" ? "settings-modal" : ""}" role="dialog" aria-modal="true" aria-label="${modal === "settings" ? "系统设置" : modal === "saved" ? "收藏档案" : "档案检索"}"><div class="modal-top"><span>RHINE LAB / ${modal === "settings" ? "SYSTEM PREFERENCES" : "ARCHIVE DIRECTORY"}</span><button data-action="close-modal" aria-label="关闭窗口">CLOSE <span>×</span></button></div>${modal === "settings" ? settingsMarkup() : `<h2>${modal === "saved" ? "SAVED ARCHIVES" : "ARCHIVE INDEX"}<small>${modal === "saved" ? "收藏档案" : "内部档案检索"}</small></h2><div class="search-field"><span>⌕</span><input id="archive-search" type="search" autocomplete="off" placeholder="输入档案编号、名称或科室" aria-label="检索档案"/><span class="key">ESC</span></div><div class="category-filters">${categories.map((c, i) => `<button data-filter="${escapeHtml(c)}" class="${i === 0 ? "active" : ""}">${escapeHtml(c)}</button>`).join("")}</div><div class="result-header"><span>FILE / 档案</span><span>DEPARTMENT / 科室</span><span>ACCESS</span></div><div id="search-results" class="search-results"></div><div class="modal-bottom"><span id="result-count"></span><span>INTERNAL DATABASE <i>●</i> CONNECTED</span></div>`}</section></div>`;
   const backdrop = $(".modal-backdrop");
   backdrop.hidden = true;
   modalTransition = new SurfaceTransition(backdrop, $(".terminal-modal"));
@@ -695,7 +683,7 @@ function renderResults() {
     .filter(
       ({ r }) =>
         (modal !== "saved" || saved.has(r.id)) &&
-        (filter === categories[0] || r.category === filter) &&
+        (filter === "全部档案" || r.category === filter) &&
         `${r.id} ${r.title} ${r.en} ${r.department} ${r.lead}`
           .toLowerCase()
           .includes(searchQuery.toLowerCase()),
@@ -704,12 +692,12 @@ function renderResults() {
     ? results
         .map(
           ({ r, i }) =>
-            `<button class="result-row" data-result="${i}"><span class="result-name"><b>${escapeHtml(r.id)}</b><span>${escapeHtml(r.title)}${isWanxiang ? "" : `<small>${escapeHtml(r.en)}</small>`}</span>${saved.has(r.id) ? "<i>＋</i>" : ""}</span><span>${escapeHtml(r.department)}</span><span>${isWanxiang ? escapeHtml(r.duration ?? "") : r.clearance === "RESTRICTED" ? "CATALOG ONLY" : "AUTHORIZED"} <i>↗</i></span></button>`,
+            `<button class="result-row" data-result="${i}"><span class="result-name"><b>${r.id}</b><span>${escapeHtml(r.title)}<small>${escapeHtml(r.en)}</small></span>${saved.has(r.id) ? "<i>＋</i>" : ""}</span><span>${escapeHtml(r.department)}</span><span>${r.clearance === "RESTRICTED" ? "CATALOG ONLY" : "AUTHORIZED"} <i>↗</i></span></button>`,
         )
         .join("")
-    : `<div class="empty-results"><span>∅</span><strong>${modal === "saved" && !searchQuery ? `尚无收藏${archiveName}` : `没有匹配的${archiveName}`}</strong>${isWanxiang ? "" : `<p>${modal === "saved" && !searchQuery ? "读取档案时，选择 SAVE ARCHIVE 将其保存在此处。" : "尝试其他名称、档案编号，或切换科室分类。"}</p>`}<button data-action="reset-search">${modal === "saved" ? `查看全部${archiveName} →` : "重置检索 →"}</button></div>`;
+    : `<div class="empty-results"><span>∅</span><strong>${modal === "saved" && !searchQuery ? "尚无收藏档案" : "没有匹配的档案"}</strong><p>${modal === "saved" && !searchQuery ? "读取档案时，选择 SAVE ARCHIVE 将其保存在此处。" : "尝试其他名称、档案编号，或切换科室分类。"}</p><button data-action="reset-search">${modal === "saved" ? "查看全部档案 →" : "重置检索 →"}</button></div>`;
   $("#result-count").textContent =
-    `${String(results.length).padStart(2, "0")} ${isWanxiang ? "份讲义" : "RECORDS FOUND"}`;
+    `${String(results.length).padStart(2, "0")} RECORDS FOUND`;
 }
 function updateQualitySummary() {
   const summary = document.querySelector("#quality-summary");
@@ -725,14 +713,7 @@ function motionSettingsMarkup() {
     : "当前使用完整动效。"}</p>${prefs.reduced ? '<button data-action="enable-motion">启用完整动效并重播 ↻</button>' : ""}</div>`;
 }
 function settingsMarkup() {
-  return `<h2>${isWanxiang ? "设置" : "SYSTEM SETTINGS<small>终端偏好设置</small>"}</h2>
-    ${isWanxiang ? "" : '<p class="settings-intro">JOYCE MOORE <span>·</span> SESSION AUTHORIZED</p>'}
-    ${isWallpaper ? '<p class="wallpaper-settings-note">每次启动都会读取 Wallpaper Engine 中的设置。在此修改仅对当前运行生效，无法持久保存；如需保留，请在 Wallpaper Engine 的壁纸属性中调整。</p>' : ""}
-    <div class="settings-list">${themeSettingsMarkup(prefs.colorTheme === "dark")}${!isWallpaper ? `<label><div><strong>SUPER PERFORMANCE</strong><span>降低三维画质和渲染分辨率，保留完整动效；关闭后恢复原画质</span></div><input type="checkbox" data-pref="superPerformance" ${prefs.superPerformance ? "checked" : ""}/><i class="toggle"></i></label>` : ""}${workbench?.settingsMarkup() ?? ""}${audioSettingsMarkup(prefs)}<label><div><strong>REDUCED MOTION</strong><span>跳过开机动画，简化选档、镜头和文字动效</span></div><input type="checkbox" data-pref="reduced" ${prefs.reduced ? "checked" : ""}/><i class="toggle"></i></label></div>
-    ${motionSettingsMarkup()}${qualityMarkup(prefs.rendering)}${isWanxiang ? "" : pwaSettingsMarkup()}
-    <div class="settings-shortcuts">${isWallpaper ? '<span>DESKTOP CONTROLS</span><p>拖动阵列或点击界面按钮浏览档案。桌面模式下，方向键与滚轮可能无法传入壁纸。</p>' : '<span>KEYBOARD CONTROLS</span><p><kbd>←</kbd><kbd>→</kbd> 切列 <kbd>↑</kbd><kbd>↓</kbd> 选档 <kbd>ENTER</kbd> 读取 <kbd>/</kbd> 检索 <kbd>ESC</kbd> 返回</p>'}</div>
-    <div class="settings-bottom">${!isWallpaper && document.fullscreenEnabled ? '<button data-action="fullscreen">FULLSCREEN <span>↗</span></button>' : ''}<button data-action="restart">${isWanxiang ? "重播完整演出" : "REINITIALIZE SYSTEM"} <span>↻</span></button></div>
-    <div class="modal-bottom"><span>${isWanxiang ? "" : "ANALYSIS OS / 1.0 · "}使用 MiSans 字体（小米） <a href="${assetUrl("fonts/MiSans-license.pdf")}" target="_blank" rel="noopener">字体许可</a></span><span>${escapeHtml(bootCopy.powered)}</span></div>`;
+  return `<h2>SYSTEM SETTINGS<small>终端偏好设置</small></h2><p class="settings-intro">JOYCE MOORE <span>·</span> SESSION AUTHORIZED</p>${isWallpaper ? '<p class="wallpaper-settings-note">每次启动都会读取 Wallpaper Engine 中的设置。在此修改仅对当前运行生效，无法持久保存；如需保留，请在 Wallpaper Engine 的壁纸属性中调整。</p>' : ""}<div class="settings-list">${themeSettingsMarkup(prefs.colorTheme === "dark")}${!isWallpaper ? `<label><div><strong>SUPER PERFORMANCE</strong><span>降低三维画质和渲染分辨率，保留完整动效；关闭后恢复原画质</span></div><input type="checkbox" data-pref="superPerformance" ${prefs.superPerformance ? "checked" : ""}/><i class="toggle"></i></label>` : ""}${workbench?.settingsMarkup() ?? ""}${audioSettingsMarkup(prefs)}<label><div><strong>REDUCED MOTION</strong><span>跳过开机动画，简化选档、镜头和文字动效</span></div><input type="checkbox" data-pref="reduced" ${prefs.reduced ? "checked" : ""}/><i class="toggle"></i></label></div>${motionSettingsMarkup()}${qualityMarkup(prefs.rendering)}${pwaSettingsMarkup()}<div class="settings-shortcuts">${isWallpaper ? '<span>DESKTOP CONTROLS</span><p>拖动阵列或点击界面按钮浏览档案。桌面模式下，方向键与滚轮可能无法传入壁纸。</p>' : '<span>KEYBOARD CONTROLS</span><p><kbd>←</kbd><kbd>→</kbd> 切列 <kbd>↑</kbd><kbd>↓</kbd> 选档 <kbd>ENTER</kbd> 读取 <kbd>/</kbd> 检索 <kbd>ESC</kbd> 返回</p>'}</div><div class="settings-bottom">${!isWallpaper && document.fullscreenEnabled ? '<button data-action="fullscreen">FULLSCREEN <span>↗</span></button>' : ''}<button data-action="restart">REINITIALIZE SYSTEM <span>↻</span></button></div><div class="modal-bottom"><span>ANALYSIS OS / 1.0 · 使用 MiSans 字体（小米） <a href="${assetUrl("fonts/MiSans-license.pdf")}" target="_blank" rel="noopener">字体许可</a></span><span>POWERED BY RHINE LAB</span></div>`;
 }
 
 document.addEventListener("input", (e) => {
@@ -771,10 +752,10 @@ document.addEventListener("change", (e) => {
   }
 });
 document.addEventListener("click", (e) => {
-  if (openingDisposed || wanxiangHost.waitingForHome) return;
+  if (isWanxiang || openingDisposed) return;
   const themeButton = (e.target as Element).closest<HTMLElement>("[data-color-theme]");
   if (themeButton) { prefs.colorTheme = themeButton.dataset.colorTheme === "dark" ? "dark" : "light"; savePrefs(); return; }
-  if (!started || (isWanxiang && mode === "boot")) return;
+  if (!started) return;
   if (modalClosing) return;
   const el = (e.target as Element).closest<HTMLElement>("button");
   if (!el) return;
@@ -870,7 +851,7 @@ document.addEventListener("click", (e) => {
   }
 });
 document.addEventListener("keydown", (e) => {
-  if (openingDisposed || wanxiangHost.waitingForHome || !started || (isWanxiang && mode === "boot")) return;
+  if (isWanxiang || openingDisposed || !started) return;
   if (viewer?.isOpen) return;
   if (playground?.active && !modal) {
     if (e.key === "Escape") { e.preventDefault(); playground.stop(); }
@@ -955,7 +936,7 @@ const ease = (t: number) => {
   return t * t * (3 - 2 * t);
 };
 function bootFrame(t: number) {
-  if (isWanxiang && frozenTime === null && openingPresentation === "entry" && t >= ARRAY_OPENING_END) {
+  if (isWanxiang && t >= ARRAY_OPENING_END) {
     finishBoot();
     return undefined;
   }
@@ -1001,8 +982,7 @@ function bootFrame(t: number) {
     lift = ease((t - 26) / 1.8),
     zoom = 0.55 * ease((t - 27.3) / 1.65) + 0.45 * ease((t - 29.0) / 5.0);
   if (t >= 35) {
-    if (isWanxiang) finishBoot("detail");
-    else setMode("detail");
+    setMode("detail");
     return undefined;
   }
   return { reveal, lift, zoom, time: t };
@@ -1070,15 +1050,16 @@ function frame(ms: number) {
 function bindScene(scene: ArchiveScene, cell?: { lane: number; row: number }) {
     scene.select(selected, cell ? { cell } : undefined);
     scene.onSelect = (i, cell) => {
-      if (wanxiangHost.waitingForHome || mode !== "archive" || modal || viewer?.isOpen) return;
+      if (isWanxiang || mode !== "archive" || modal || viewer?.isOpen) return;
       select(i, cell ? { cell } : undefined);
     };
     scene.onNavigate = (axis, direction) => {
-      if (wanxiangHost.waitingForHome || mode !== "archive" || modal || viewer?.isOpen) return;
+      if (isWanxiang || mode !== "archive" || modal || viewer?.isOpen) return;
       if (axis === "lane") stepColumn(direction);
       else stepFile(direction);
     };
     scene.onHover = (i) => {
+      if (isWanxiang) return;
       const label = $("#hover-label");
       if (i === null) {
         label.hidden = true;
@@ -1218,7 +1199,6 @@ function completeStartup(silent: boolean) {
   }
   audio.releaseEntry();
   audio.restartBoot();
-  openingPresentation = wanxiangHost.mode === "preview" ? "full" : "entry";
   const fade = prefs.reduced ? 0 : 600;
   bootStart = performance.now() / 1000 - (reviewParams.has("time") ? Number(reviewParams.get("time")) : 1.76);
   if (!reviewParams.has("time")) bootStart += fade / 1000;
@@ -1228,7 +1208,7 @@ function completeStartup(silent: boolean) {
     if (isWanxiang) finishBoot();
     else setMode("archive");
   }
-  if (reviewParams.get("scene") === "detail") setMode("detail");
+  if (!isWanxiang && reviewParams.get("scene") === "detail") setMode("detail");
   if (isWallpaper && wallpaperHost()?.properties.boot?.value === false) setMode("archive");
   $("#stage").inert = false;
   if (mobileEntry) mobileEntry.inert = false;
@@ -1242,8 +1222,6 @@ function completeStartup(silent: boolean) {
       const skip = $("#skip");
       const target = mode === "boot" ? skip.getClientRects().length ? skip : $(".mobile-entry") : $(".read-file");
       target.focus({ preventScroll: true });
-    } else if (isWanxiang && !wanxiangHost.waitingForHome && restoreFocus && mode === "archive") {
-      $(".read-file").focus({ preventScroll: true });
     }
   }, fade);
   animationFrame = requestAnimationFrame(frame);
@@ -1315,7 +1293,7 @@ if (isWallpaper) {
 }
 void start();
 // Deterministic review controls: the running application, never a video surrogate.
-Object.assign(window, {
+if (!isWanxiang) Object.assign(window, {
   rhine: {
     // The review button supplies a real user activation. Preferences stay local to this preview.
     playBootPreview: async (music = false) => {
@@ -1348,7 +1326,6 @@ Object.assign(window, {
       mode,
       ready,
       startup: started ? "started" : entry?.phase ?? "loading",
-      openingPresentation,
       motion: { reduced: prefs.reduced, systemReduced: matchMedia("(prefers-reduced-motion: reduce)").matches },
       bootTime: mode === "boot" ? started ? (frozenTime ?? performance.now() / 1000 - bootStart) + 5 : 6.76 : null,
       selected: records[selected].id,

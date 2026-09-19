@@ -1,11 +1,11 @@
 import { isWanxiang } from "./wallpaper";
 
-type HostMode = "startup" | "preview";
+type HostMode = "startup";
 type OpeningEvent = "ready" | "complete" | "error";
 
 const requestedMode = new URLSearchParams(location.search).get("wanxiangHost");
 const mode: HostMode | null = isWanxiang && window.parent !== window &&
-  (requestedMode === "startup" || requestedMode === "preview") ? requestedMode : null;
+  requestedMode === "startup" ? requestedMode : null;
 let announced = false;
 let completed = false;
 let failed = false;
@@ -26,7 +26,7 @@ export const wanxiangHost = {
     send("ready");
   },
   complete() {
-    if (!mode || !announced || failed || disposed || (mode === "startup" && completed)) return;
+    if (!mode || !announced || failed || disposed || completed) return;
     completed = true;
     send("complete");
   },
