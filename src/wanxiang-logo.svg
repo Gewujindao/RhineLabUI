@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 320">
+  <g fill="none" stroke="#b98f33">
+    <circle cx="160" cy="160" r="108" stroke-width="3"/><circle cx="160" cy="160" r="82" stroke-opacity=".55"/>
+    <path d="M160 35v250M35 160h250M72 72l176 176M248 72 72 248" stroke-opacity=".35"/>
+    <path d="m160 74 22 64 64 22-64 22-22 64-22-64-64-22 64-22z" fill="#141a22" stroke-width="4"/>
+  </g>
+  <text x="310" y="150" fill="#ece3d0" font-family="serif" font-size="104" font-weight="600" letter-spacing="28">万象</text>
+  <path d="M315 186h530" stroke="#b98f33" stroke-width="3"/>
+  <text x="316" y="235" fill="#b98f33" font-family="serif" font-size="27" letter-spacing="10">新维港校准录</text>
+  <text x="318" y="274" fill="#7f9fac" font-family="monospace" font-size="16" letter-spacing="4">VANCOUVER COLLEGIUM · 1901</text>
+</svg>
