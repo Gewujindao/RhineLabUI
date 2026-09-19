@@ -1,5 +1,7 @@
 export const isWallpaper = import.meta.env.MODE === "wallpaper";
+export const isWanxiang = import.meta.env.MODE === "wanxiang";
 if (isWallpaper) document.documentElement.dataset.wallpaper = "true";
+if (isWanxiang) document.documentElement.dataset.wanxiang = "true";
 export type WallpaperProperties = Record<string, { value: unknown }>;
 declare global {
   interface Window {
