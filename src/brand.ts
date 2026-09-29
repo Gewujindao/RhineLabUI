@@ -43,6 +43,8 @@ export const bootLogo = logo
 export const bootCopy = {
   access: `${terminal} · 暖机`,
   identity: "咒印介质",
+  // Chinese status lines join with a full-width colon and no spaces, not the source's " : ".
+  identityJoin: "：",
   identityDetail: "稳定",
   request: "相位校准",
   processing: "接入万象网",

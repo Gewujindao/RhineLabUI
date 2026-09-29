@@ -7,8 +7,13 @@
    the progress rule sits below it instead of across its last line. No caption: the rule says it is loading. */
 [data-wanxiang="true"] .loading-mark { width: min(540px, 70vw); height: auto; }
 [data-wanxiang="true"] .loading-mark svg { width: 100%; height: auto; }
-[data-wanxiang="true"] .loading > i { background: var(--theme-line); }
+[data-wanxiang="true"] .loading > i { height: 2px; background: var(--theme-line); }
 [data-wanxiang="true"] .loading > i::after { background: var(--theme-accent); }
+/* The scan ring in the terminal's ink and brass: the source's white arc and black hairlines read as a stock
+   spinner on the ivory ground. */
+[data-wanxiang="true"] .scan svg g { stroke: var(--theme-ink); }
+[data-wanxiang="true"] .scan svg path:nth-of-type(2) { stroke: var(--theme-accent); }
+[data-wanxiang="true"] .scan .scan-core { fill: var(--theme-ink); }
 [data-wanxiang="true"] .scan .orbit-dot { fill: var(--theme-accent); }
 [data-wanxiang="true"] :focus-visible {
   outline: 2px solid var(--theme-focus);
@@ -68,35 +73,53 @@
  * needed a second look). The boot stage is laid out at 1920×1080 and scaled to the window, so an 18px line
  * showed at about 13px in a 1440 window; every line of the boot and the settled HUD is set larger here.
  */
-[data-wanxiang="true"] .access-text { width: 640px; font-size: 32px; letter-spacing: 2px; }
-[data-wanxiang="true"] .auth-status { font-size: 30px; }
+/* The boot's own lines speak in the same warm ink and serif as the plate and the welcome card, not the
+   source's pure black sans. The warming line is centred on the ground's glow, and the status line needs no
+   list bullet: it is the only line. */
+[data-wanxiang="true"] .boot-background {
+  background: radial-gradient(ellipse at 50% 48%, #f1ece3 0%, #ebe6dd 76%, #e6e0d5 100%);
+}
+[data-wanxiang="true"] :is(.access-text, .auth-status, .scan > span) {
+  color: var(--theme-ink);
+  font-family: "Noto Serif SC", "Songti SC", SimSun, serif;
+  font-weight: 500;
+}
+[data-wanxiang="true"] .access-text {
+  left: 640px;
+  width: 640px;
+  text-align: center;
+  font-size: 32px;
+  letter-spacing: 2px;
+}
+[data-wanxiang="true"] .auth-status { font-size: 30px; letter-spacing: 1px; }
+[data-wanxiang="true"] .auth-status > span:first-child { display: none; }
 [data-wanxiang="true"] .scan > span { font-size: 40px; letter-spacing: 4px; }
 [data-wanxiang="true"] .welcome { top: 380px; }
-[data-wanxiang="true"] .welcome-heading { font-size: 88px; line-height: 96px; letter-spacing: 14px; }
+[data-wanxiang="true"] .welcome-heading { font-size: 88px; line-height: 96px; letter-spacing: 14px; font-weight: 600; }
 [data-wanxiang="true"] .welcome-company { top: 100px; }
+[data-wanxiang="true"] .welcome-company strong { font-weight: 500; }
 /*
  * The card is the network and its node: 万象网 and 新维港节点. The academy and the date are already on the
  * corner plate at the same moment, so the source's third line is not shown and the emblem moves up to it.
- * The panel the heading enters on is a lacquered ink plate with a brass rim, the terminal's own material,
- * instead of the source's flat black card.
+ * The source's dark panel is not shown either: in a light sequence a dark card for under half a second reads
+ * as a strobe, so the heading comes up out of the paper, warm ivory to warm ink (boot.ts).
  */
 [data-wanxiang="true"] .welcome-database { display: none; }
 [data-wanxiang="true"] .welcome-logo { top: 188px; }
-[data-wanxiang="true"] .welcome-panel {
-  background:
-    linear-gradient(158deg, rgba(255, 238, 206, 0.07), transparent 42%),
-    linear-gradient(180deg, #2b251d, #17130f);
-  box-shadow:
-    inset 0 0 0 2px rgba(163, 131, 75, 0.9),
-    inset 0 0 0 9px #1c1813,
-    inset 0 0 0 10px rgba(163, 131, 75, 0.38),
-    0 20px 44px rgba(46, 32, 14, 0.22);
-}
-/* The node's name sits on a brass plate, not the source's solid black label. */
+[data-wanxiang="true"] .welcome-panel { display: none; }
+/* The node's name is engraved in a brass plate: a brushed face, a darker rim and letters cut into it. */
 [data-wanxiang="true"] .welcome-company .welcome-highlight {
-  background: linear-gradient(180deg, #a3834b, #7d5f2f);
-  color: #f7f0e1;
-  box-shadow: inset 0 1px 0 rgba(255, 236, 200, 0.35), inset 0 -1px 0 rgba(40, 26, 10, 0.35);
+  border-radius: 2px;
+  background:
+    repeating-linear-gradient(90deg, rgba(255, 240, 210, 0.07) 0 1px, transparent 1px 3px),
+    linear-gradient(180deg, #b39158 0%, #9a7a43 46%, #7d5f2f 100%);
+  color: #f6eedc;
+  text-shadow: 0 1px 0 rgba(58, 38, 12, 0.6), 0 -1px 0 rgba(255, 236, 200, 0.2);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 236, 200, 0.45),
+    inset 0 -1px 0 rgba(40, 26, 10, 0.45),
+    0 0 0 1px rgba(92, 68, 30, 0.6),
+    0 3px 8px rgba(60, 40, 12, 0.18);
 }
 /* The exit bloom warms toward the paper instead of flashing pure white. */
 [data-wanxiang="true"] .boot-white { background: #f8f3ea; }
@@ -112,8 +135,8 @@
 [data-wanxiang="true"] .brand > div { font-size: 26px; line-height: 34px; }
 [data-wanxiang="true"] .brand p {
   font-family: "Noto Serif SC", "Songti SC", SimSun, serif;
-  font-size: 17px;
-  line-height: 26px;
+  font-size: 20px;
+  line-height: 28px;
   letter-spacing: 2px;
 }
 /* The source's lower-right signature would repeat the corner plate's terminal and city; boot.ts still drives
@@ -160,4 +183,9 @@
   font-weight: 500;
   letter-spacing: 6px;
   color: #3a3128;
+  /* The same paper halo as the corner plate, so the line holds against the slat seams behind it. */
+  text-shadow:
+    0 0 2px rgba(var(--theme-paper-rgb), 0.95),
+    0 0 6px rgba(var(--theme-paper-rgb), 0.9),
+    0 0 12px rgba(var(--theme-paper-rgb), 0.85);
 }

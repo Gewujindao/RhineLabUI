@@ -38,7 +38,7 @@ export function bootMotion(appTime: number) {
   let auth = "";
   if (f < 363) {
     auth = typed(bootCopy.identity, f, 282, 295);
-    if (f >= 320) auth += " : " + typed(bootCopy.identityDetail, f, 321, 339);
+    if (f >= 320) auth += bootCopy.identityJoin + typed(bootCopy.identityDetail, f, 321, 339);
   } else if (f < 421) auth = typed(bootCopy.request, f, 367, 389);
   else {
     auth = typed(bootCopy.processing, f, 423, 440);
