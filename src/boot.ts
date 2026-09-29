@@ -2,6 +2,7 @@ import { bootMotion } from "./boot-motion";
 import { bootCopy, brandText } from "./brand";
 import { themeAmount } from "./theme-ui";
 import { BootLettering } from "./boot-lettering";
+import { isWanxiang } from "./wallpaper";
 
 const ns = "http://www.w3.org/2000/svg";
 const arc = (r: number, start: number, sweep: number, x = 960, y = 540) => {
@@ -176,8 +177,11 @@ export class BootSequence {
     if (s.scanVisible) this.renderScan(s);
     this.opacity(".welcome", s.welcomeVisible ? s.welcomeOpacity : 0);
     this.el(".welcome").style.transform = `scale(${s.welcomeScale})`;
-    this.el(".welcome").style.filter =
-      `blur(${s.exitBlur}px) invert(${s.exit * 0.22}) sepia(${s.exit}) saturate(${1 + s.exit * 5}) hue-rotate(${s.exit * 115}deg)`;
+    // The source exit tints its black-and-white card through a hue shift; on 万象's warm ivory that turns
+    // green, so the card only softens and warms as it recedes.
+    this.el(".welcome").style.filter = isWanxiang
+      ? `blur(${s.exitBlur}px) sepia(${s.exit * 0.35})`
+      : `blur(${s.exitBlur}px) invert(${s.exit * 0.22}) sepia(${s.exit}) saturate(${1 + s.exit * 5}) hue-rotate(${s.exit * 115}deg)`;
     this.opacity(".welcome-panel", s.welcomePanel);
     this.opacity(".welcome-heading", 1);
     this.el(".welcome-heading").style.color =

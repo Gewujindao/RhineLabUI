@@ -166,7 +166,7 @@ const prefs = {
   superPerformance: false,
   ...storedPrefs,
   rendering: normalizeQuality(storedPrefs.rendering, storedPrefs.quality !== false),
-  colorTheme: storedPrefs.colorTheme === "light" ? "light" : storedPrefs.colorTheme === "dark" || isWanxiang ? "dark" : "light",
+  colorTheme: storedPrefs.colorTheme === "dark" ? "dark" : "light",
 };
 paintTheme(prefs.colorTheme === "dark" ? 1 : 0);
 const rollingMotion = {

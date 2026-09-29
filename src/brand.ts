@@ -17,16 +17,17 @@ export const logo = source.replace(
 );
 export const brandHeading = `<h1>${escapeHtml(title)}</h1><div>${escapeHtml(subtitle)}</div><p>${escapeHtml(caption)}</p>`;
 
-// These states describe this local interface's presentation, not a player,
-// account, authorization service or fabricated learning progress.
+// The Tiangong terminal calibrating itself as it starts, in the machine's own terms: electricity reads
+// and writes, the sigil-held medium keeps its state, and spell power holds threshold and phase. These
+// describe the instrument, not a player, account, authorization service or learning progress.
 export const bootCopy = {
-  access: "STARTING INTERFACE",
-  identity: "LOCAL ARCHIVE",
-  identityDetail: "DISPLAY",
-  request: "OPENING ARCHIVE",
-  processing: "PREPARING VIEW",
-  processingGlitch: "          VIEW...",
-  permission: "ARCHIVE VIEW",
+  access: "天工终端 · 暖机",
+  identity: "咒印介质",
+  identityDetail: "稳定",
+  request: "相位校准",
+  processing: "接续万象网",
+  processingGlitch: "　　　万象网...",
+  permission: "校准完成",
   welcome: title,
   company: subtitle,
   database: caption,

@@ -1,10 +1,11 @@
 import "./theme.css";
 import { isWanxiang } from "./wallpaper";
 
+// The terminal's own air: ivory paper, warm ink and brass, as on the Tiangong map.
 const palette = isWanxiang ? {
-  ink: ["#263238", "#f3ead7"], muted: ["#645a4b", "#c9bca6"], line: ["#9f927b", "#89775d"],
-  paper: ["#efe5d0", "#35302a"], panel: ["#f6efde", "#403a31"], field: ["#e8ddc6", "#4b4439"],
-  accent: ["#896524", "#c5a16b"], focus: ["#24645f", "#80d6cf"],
+  ink: ["#1f1c18", "#f3ead7"], muted: ["#6f6658", "#c9bca6"], line: ["#b0a58f", "#89775d"],
+  paper: ["#ebe6dd", "#35302a"], panel: ["#f3efe7", "#403a31"], field: ["#e3ddd1", "#4b4439"],
+  accent: ["#8f6f36", "#c5a16b"], focus: ["#24645f", "#80d6cf"],
   document: ["#f6efde", "#efe5d0"], documentInk: ["#263238", "#263238"], documentMuted: ["#645a4b", "#645a4b"],
 } as const : {
   ink: ["#080a08", "#e0e3dc"], muted: ["#77756d", "#a6b0b1"], line: ["#aaa59a", "#536166"],
