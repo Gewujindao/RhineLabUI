@@ -74,13 +74,24 @@
 [data-wanxiang="true"] .welcome { top: 380px; }
 [data-wanxiang="true"] .welcome-heading { font-size: 88px; line-height: 96px; letter-spacing: 14px; }
 [data-wanxiang="true"] .welcome-company { top: 100px; }
-[data-wanxiang="true"] .welcome-database {
-  top: 172px;
-  font-family: "Noto Serif SC", "Songti SC", SimSun, serif;
-  font-size: 21px;
-  letter-spacing: 2px;
+/*
+ * The card is the network and its node: 万象网 and 新维港节点. The academy and the date are already on the
+ * corner plate at the same moment, so the source's third line is not shown and the emblem moves up to it.
+ * The panel the heading enters on is a lacquered ink plate with a brass rim, the terminal's own material,
+ * instead of the source's flat black card.
+ */
+[data-wanxiang="true"] .welcome-database { display: none; }
+[data-wanxiang="true"] .welcome-logo { top: 188px; }
+[data-wanxiang="true"] .welcome-panel {
+  background:
+    linear-gradient(158deg, rgba(255, 238, 206, 0.07), transparent 42%),
+    linear-gradient(180deg, #2b251d, #17130f);
+  box-shadow:
+    inset 0 0 0 2px rgba(163, 131, 75, 0.9),
+    inset 0 0 0 9px #1c1813,
+    inset 0 0 0 10px rgba(163, 131, 75, 0.38),
+    0 20px 44px rgba(46, 32, 14, 0.22);
 }
-[data-wanxiang="true"] .welcome-logo { top: 226px; }
 /* The node's name sits on a brass plate, not the source's solid black label. */
 [data-wanxiang="true"] .welcome-company .welcome-highlight {
   background: linear-gradient(180deg, #a3834b, #7d5f2f);
@@ -89,7 +100,15 @@
 }
 /* The exit bloom warms toward the paper instead of flashing pure white. */
 [data-wanxiang="true"] .boot-white { background: #f8f3ea; }
-/* Corner plate: the terminal, its academy and the date, read at a glance. */
+/* Corner plate: the terminal, its academy and the date, read at a glance. The scan ring's widest arcs sweep
+   through this corner; a halo in the paper colour keeps them from reading as strokes through the enlarged
+   letters, and on the plain ground it does not show. */
+[data-wanxiang="true"] .brand {
+  text-shadow:
+    0 0 2px rgba(var(--theme-paper-rgb), 0.95),
+    0 0 6px rgba(var(--theme-paper-rgb), 0.9),
+    0 0 12px rgba(var(--theme-paper-rgb), 0.85);
+}
 [data-wanxiang="true"] .brand > div { font-size: 26px; line-height: 34px; }
 [data-wanxiang="true"] .brand p {
   font-family: "Noto Serif SC", "Songti SC", SimSun, serif;
@@ -97,22 +116,15 @@
   line-height: 26px;
   letter-spacing: 2px;
 }
-[data-wanxiang="true"] .powered { font-size: 22px; gap: 10px; }
-[data-wanxiang="true"] .powered i { height: 2px; width: 32px; background: var(--theme-accent); }
-/* Settled lecture array. */
-[data-wanxiang="true"] .tiny-label { font-size: 15px; letter-spacing: 2px; }
-[data-wanxiang="true"] .eyebrow { font-size: 15px; letter-spacing: 1.6px; }
-[data-wanxiang="true"] .file-title { font-size: 30px; }
-[data-wanxiang="true"] .file-summary { font-size: 20px; }
-[data-wanxiang="true"] .file-summary > span:last-child { font-size: 18px; }
-[data-wanxiang="true"] .system-footer { font-size: 14px; letter-spacing: 1.4px; }
-[data-wanxiang="true"] .column-navigation > div > span { font-size: 14px; letter-spacing: 1.4px; }
+/* The source's lower-right signature would repeat the corner plate's terminal and city; boot.ts still drives
+   the node, so it stays in the page but is not shown. */
+[data-wanxiang="true"] .powered { display: none; }
 
 /*
  * Array phase (the author, 2026-09-29): the rising slats are a subject in their own right, not a plain
- * ground, so the words beside them get grounds of their own instead of sitting on the slats. The callout is
- * a paper label with a brass edge, like a card beside an exhibit; the corner plate, the counters and the
- * footer sit in soft paper bands at the top and bottom while the slats between stay untouched.
+ * ground, so the words beside them get grounds of their own instead of sitting on the slats: the corner
+ * plate and the state line sit in soft paper bands at the top and bottom while the slats between stay
+ * untouched.
  */
 [data-wanxiang="true"] .archive-ui::before {
   content: "";
@@ -127,8 +139,7 @@
  * The opening names no course and no lecture (the author, 2026-09-29): 万象 is a terminal that gathers many
  * functions, and the rising array stands for the archives met on entering 万象网, not for one course's
  * lectures. The lecture number, title, duration, course counters and lecture totals are therefore not shown;
- * the only words over the array are the state line, set in the lower paper band, the corner plate and the
- * mark at the lower right.
+ * the only words over the array are the corner plate and the state line in the lower paper band.
  */
 [data-wanxiang="true"] :is(.archive-callout .eyebrow, #selected-id, .file-summary, .callout-rule, .archive-counter,
   .column-navigation, .system-footer, #inspection-text, #inspection-marks) {

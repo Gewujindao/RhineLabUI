@@ -185,8 +185,13 @@ export class BootSequence {
       : `blur(${s.exitBlur}px) invert(${s.exit * 0.22}) sepia(${s.exit}) saturate(${1 + s.exit * 5}) hue-rotate(${s.exit * 115}deg)`;
     this.opacity(".welcome-panel", s.welcomePanel);
     this.opacity(".welcome-heading", 1);
-    this.el(".welcome-heading").style.color =
-      themeAmount > .0001 ? "var(--theme-ink)" : `rgb(${255 * (1 - s.welcomeInk)} ${255 * (1 - s.welcomeInk)} ${255 * (1 - s.welcomeInk)})`;
+    // 万象's heading turns from warm ivory on the lacquer plate to the terminal's warm ink, not white to black.
+    const ink = s.welcomeInk;
+    this.el(".welcome-heading").style.color = themeAmount > .0001
+      ? "var(--theme-ink)"
+      : isWanxiang
+        ? `rgb(${243 - 212 * ink} ${234 - 206 * ink} ${216 - 192 * ink})`
+        : `rgb(${255 * (1 - ink)} ${255 * (1 - ink)} ${255 * (1 - ink)})`;
     this.opacity(".welcome-company", s.companyVisible);
     this.el(".welcome-company").style.opacity = String(
       s.companyVisible ? (s.companyMask ? 0.65 : 1) : 0,

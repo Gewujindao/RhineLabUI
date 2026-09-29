@@ -276,9 +276,13 @@ export class ArchiveScene {
     this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
     this.renderer.toneMappingExposure = 1.05;
+    // In 万象 the array cannot be operated (the opening only plays or skips), so its name describes the
+    // picture instead of offering the reference browser's click and drag controls.
     this.renderer.domElement.setAttribute(
       "aria-label",
-      "三维研究档案阵列，点击选择，左右拖动切列，上下拖动或滚轮切换列内档案",
+      isWanxiang
+        ? "万象网档案墙，档案随接入依次升起"
+        : "三维研究档案阵列，点击选择，左右拖动切列，上下拖动或滚轮切换列内档案",
     );
     container.appendChild(this.renderer.domElement);
     this.renderer.domElement.addEventListener('webglcontextrestored', () => this.renderState.invalidate(), { signal: this.inputEvents.signal });

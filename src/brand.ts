@@ -28,20 +28,18 @@ export const networkText = { title: "万象网", node: "新维港节点", place:
 
 export const brandHeading = `<h1>${escapeHtml(terminalPlate.title)}</h1><div>${escapeHtml(terminalPlate.subtitle)}</div><p>${escapeHtml(terminalPlate.caption)}</p>`;
 
-// The boot lockup keeps the emblem and the 万象 wordmark; its two caption lines become the terminal's
-// plate instead of the game's subtitle and English strapline.
-// The caption lines are also set larger and in the serif: at the lockup's scale the source's 27 and 16 unit
-// lines read at about 11 and 7 px in a 1440 window.
+// The boot lockup is the terminal's mark: the emblem, the 万象 wordmark and its rule. Its two caption lines
+// stay as empty text nodes (boot.ts fades them in with the wordmark): the corner plate already shows the
+// academy and the date from the same moment, and the same words twice on screen have no reason to be there.
 export const bootLogo = logo
-  .replace(/<text([^>]*)>([^<]*)<\/text>/g, (whole, attributes: string, text: string) => {
-    if (text === subtitle) return `<text${attributes.replace(/font-size="[^"]*"/, 'font-size="36"').replace(/letter-spacing="[^"]*"/, 'letter-spacing="6"')}>${escapeHtml(terminalPlate.subtitle)}</text>`;
-    if (text === caption) return `<text${attributes.replace(/font-family="[^"]*"/, 'font-family="serif"').replace(/font-size="[^"]*"/, 'font-size="26"').replace(/letter-spacing="[^"]*"/, 'letter-spacing="3"').replace(/y="[^"]*"/, 'y="284"')}>${escapeHtml(terminalPlate.caption)}</text>`;
-    return whole;
-  });
+  .replace(/<text([^>]*)>([^<]*)<\/text>/g, (whole, attributes: string, text: string) =>
+    text === subtitle || text === caption ? `<text${attributes}></text>` : whole);
 
 // The 万象终端 calibrating itself as it starts, in the machine's own terms: the sigil-held medium keeps
 // its state, spell power holds threshold and phase, and the line reaches the network. These describe
 // the instrument and its connection, not a player, account, authorization service or learning progress.
+// `database` and `powered` feed nodes boot.ts animates; in 万象 both nodes are hidden (wanxiang.css) because
+// they would repeat the corner plate's academy, date and terminal name.
 export const bootCopy = {
   access: `${terminal} · 暖机`,
   identity: "咒印介质",
