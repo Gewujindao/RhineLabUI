@@ -166,7 +166,8 @@ const prefs = {
   superPerformance: false,
   ...storedPrefs,
   rendering: normalizeQuality(storedPrefs.rendering, storedPrefs.quality !== false),
-  colorTheme: storedPrefs.colorTheme === "dark" ? "dark" : "light",
+  // 万象 offers no colour choice; a stored "dark" there is only the former default, saved with the audio prefs.
+  colorTheme: !isWanxiang && storedPrefs.colorTheme === "dark" ? "dark" : "light",
 };
 paintTheme(prefs.colorTheme === "dark" ? 1 : 0);
 const rollingMotion = {
