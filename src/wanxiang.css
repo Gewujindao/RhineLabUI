@@ -121,24 +121,30 @@
     linear-gradient(180deg, rgba(240, 235, 226, 0.92) 0, rgba(240, 235, 226, 0) 17%),
     linear-gradient(0deg, rgba(240, 235, 226, 0.94) 0, rgba(240, 235, 226, 0) 22%);
 }
-[data-wanxiang="true"] .archive-callout { width: 726px; isolation: isolate; }
-[data-wanxiang="true"] .archive-callout::before {
-  content: "";
-  position: absolute;
-  z-index: -1;
-  left: -26px;
-  top: -24px;
-  width: 770px;
-  height: calc(100% + 44px);
-  background: linear-gradient(180deg, #f6f2ea, #eee8dd);
-  border: 1px solid rgba(143, 111, 54, 0.3);
-  border-left: 3px solid var(--theme-accent);
-  box-shadow: 0 16px 36px rgba(58, 42, 22, 0.16);
+/*
+ * The opening names no course and no lecture (the author, 2026-09-29): 万象 is a terminal that gathers many
+ * functions, and the rising array stands for the archives met on entering 万象网, not for one course's
+ * lectures. The lecture number, title, duration, course counters and lecture totals are therefore not shown;
+ * the only words over the array are the state line, set in the lower paper band, the corner plate and the
+ * mark at the lower right.
+ */
+[data-wanxiang="true"] :is(.archive-callout .eyebrow, #selected-id, .file-summary, .callout-rule, .archive-counter,
+  .column-navigation, .system-footer, #inspection-text, #inspection-marks) {
+  display: none !important;
 }
-/* One deep ink per label: the lecture number. The rest steps down in warm greys. */
-[data-wanxiang="true"] .eyebrow { color: #8a7c66; }
-[data-wanxiang="true"] .file-title { font-weight: 600; color: #2a241c; }
-[data-wanxiang="true"] .file-summary { color: #4b4236; }
-[data-wanxiang="true"] .file-summary > span:last-child { color: #8a7d68; }
-/* The label's brass edge now points at the raised column; the leader's square anchor would sit on the card. */
-[data-wanxiang="true"] .callout-rule i { display: none; }
+[data-wanxiang="true"] .archive-callout {
+  left: 0;
+  right: 0;
+  top: auto;
+  bottom: 150px;
+  width: auto;
+  display: flex;
+  justify-content: center;
+}
+[data-wanxiang="true"] .file-title {
+  font-family: "Noto Serif SC", "Songti SC", SimSun, serif;
+  font-size: 30px;
+  font-weight: 500;
+  letter-spacing: 6px;
+  color: #3a3128;
+}

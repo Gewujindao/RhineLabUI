@@ -765,17 +765,18 @@ export class ArchiveScene {
     c.fillText(isWanxiang ? bootCopy.welcome : "RHINE LAB, LLC.", 22, 116);
     c.font = "32px MiSans";
     c.fillStyle = "#878476";
-    c.fillText(isWanxiang ? archiveColumns[fileLocation(index).lane] : "INTERNAL DATABASE", 25, 174, 710);
+    // In 万象 the raised slat is an archive card of the network, not a course's lecture.
+    c.fillText(isWanxiang ? "新维港节点档案" : "INTERNAL DATABASE", 25, 174, 710);
     c.fillStyle = "#171713";
     c.font = "bold 130px MiSans";
     c.fillText("NO." + String(index + 1).padStart(3, "0"), 22, 360);
     c.fillRect(782, 32, 221, 39);
     c.fillStyle = "#eee9de";
     c.font = "24px MiSans";
-    c.fillText(isWanxiang ? "讲义" : "R L / I S", 809, 61);
+    c.fillText(isWanxiang ? "档案" : "R L / I S", 809, 61);
     c.fillStyle = "#171713";
     c.font = "bold 64px MiSans";
-    c.fillText(isWanxiang ? "课程" : "INFO", 830, 143);
+    c.fillText(isWanxiang ? "馆藏" : "INFO", 830, 143);
     c.drawImage(this.labelMark, 790, 242, 210, 98);
     this.labelTexture.needsUpdate = true;
   }

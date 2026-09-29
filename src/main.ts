@@ -51,9 +51,9 @@ const $ = <T extends HTMLElement = HTMLElement>(selector: string) =>
 import { logo, bootLogo, labelMarkSvg, brandHeading, bootCopy } from "./brand";
 
 document.documentElement.dataset.wanxiang = String(isWanxiang);
-const archiveName = isWanxiang ? "讲义" : "档案";
-const archiveHeading = isWanxiang ? "课程讲义" : "INTERNAL DATABASE";
-const fileNumberLabel = isWanxiang ? "讲义编号：" : "FILE NUMBER: ";
+const archiveName = "档案";
+const archiveHeading = isWanxiang ? "万象网档案" : "INTERNAL DATABASE";
+const fileNumberLabel = isWanxiang ? "档案编号：" : "FILE NUMBER: ";
 const initialRecord = records[0];
 const savedKey = isWanxiang ? "wanxiang-opening-saved" : "rhine-saved";
 const settingsKey = isWanxiang ? "wanxiang-opening-settings" : "rhine-settings";
@@ -391,7 +391,8 @@ function setMode(next: Mode) {
   scene?.setMode(next === "boot" ? "hidden" : next);
   if (next !== "boot") {
     bootSequence.reset();
-    $(".file-title").firstChild!.textContent = fileNumberLabel;
+    // In 万象 the settled opening keeps its state line; it never names a lecture.
+    $(".file-title").firstChild!.textContent = isWanxiang ? "正在进入万象网…" : fileNumberLabel;
     $("#stage").dataset.boot = "done";
   }
   if (next === "detail" && previousMode !== "detail") {
@@ -971,8 +972,10 @@ function bootFrame(t: number) {
     $("#stage").dataset.boot = step;
     lastStep = step;
   }
+  // 万象's opening names no course or lecture: once typed, the state line stays until the host hands over to
+  // Home, instead of turning back into a lecture number.
   $(".file-title").firstChild!.textContent =
-    step === "array"
+    step === "array" || (isWanxiang && t >= 21.94)
       ? (isWanxiang ? "正在进入万象网…" : "SELECTING FILES...").slice(0, Math.max(0, Math.floor((t - 21.94) * 18)))
       : fileNumberLabel;
   $("#stage").style.setProperty(
