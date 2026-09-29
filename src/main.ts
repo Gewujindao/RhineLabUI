@@ -95,7 +95,7 @@ $("#stage").innerHTML = `
   <footer class="system-footer">${isWanxiang ? `<span>${records.length} 份讲义</span><span>${archiveColumns.length} 门课程</span>` : `<span><i class="status-light"></i> SESSION AUTHORIZED${isWallpaper ? '<button type="button" class="three-toggle" data-action="toggle-three" aria-pressed="true" title="卸载三维模型，保留 2D 界面">3D 开启</button>' : ''}</span><span>JOYCE MOORE <i>／</i> <span id="clock">00:00:00</span></span><button data-action="replay" title="重播启动流程">REINITIALIZE ↗</button>`}</footer>
   <div id="pwa-update-notice" class="pwa-update-notice" role="status" hidden><span>新版本已就绪</span><button data-pwa-action="update">更新并重启 ↻</button></div>
   <div id="modal-root"></div><div id="toast" class="toast" role="status"></div>
-  <div id="loading" class="loading"><div class="loading-mark">${logo}</div><span>${isWanxiang ? "正在载入" : "CONNECTING TO INTERNAL DATABASE"}</span><i></i></div>
+  <div id="loading" class="loading"><div class="loading-mark">${logo}</div>${isWanxiang ? "" : "<span>CONNECTING TO INTERNAL DATABASE</span>"}<i></i></div>
 `;
 
 $("#boot-background").insertAdjacentHTML(

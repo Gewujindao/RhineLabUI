@@ -3,7 +3,9 @@
   background: var(--theme-paper);
   color: var(--theme-ink);
 }
-[data-wanxiang="true"] .loading-mark { width: min(540px, 70vw); }
+/* The source box is 90px tall for its small mark; 万象's lockup is 3:1, so the box follows the drawing and
+   the progress rule sits below it instead of across its last line. No caption: the rule says it is loading. */
+[data-wanxiang="true"] .loading-mark { width: min(540px, 70vw); height: auto; }
 [data-wanxiang="true"] .loading-mark svg { width: 100%; height: auto; }
 [data-wanxiang="true"] .loading > i { background: var(--theme-line); }
 [data-wanxiang="true"] .loading > i::after { background: var(--theme-accent); }
