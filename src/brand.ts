@@ -15,21 +15,43 @@ export const logo = source.replace(
   "<svg ",
   `<svg class="wanxiang-brand-logo" role="img" aria-label="${escapeHtml(title)}" `,
 );
-export const brandHeading = `<h1>${escapeHtml(title)}</h1><div>${escapeHtml(subtitle)}</div><p>${escapeHtml(caption)}</p>`;
+// Only the loading mark carries the game's own title. From the boot on, the opening speaks from inside the
+// world: the player's 万象终端 at the academy warms up, calibrates and joins the academy's 万象网 node. The
+// terms come from the lore: every university runs a 万象网 node (worldview 12 and the Pacific-coast base
+// map); the player studies at 不列颠哥伦比亚学院 in 新维港 (player card); the story's rooms name the device
+// 万象终端 (万象终端通信室); the calendar is 万象历.
+const terminal = "万象终端";
+const academy = "不列颠哥伦比亚学院";
+const era = "万象历一九〇一年";
+export const terminalPlate = { title: terminal, subtitle: academy, caption: `新维港 · ${era}` } as const;
+export const networkText = { title: "万象网", node: "新维港节点", place: `${academy} · ${era}` } as const;
 
-// The Tiangong terminal calibrating itself as it starts, in the machine's own terms: electricity reads
-// and writes, the sigil-held medium keeps its state, and spell power holds threshold and phase. These
-// describe the instrument, not a player, account, authorization service or learning progress.
+export const brandHeading = `<h1>${escapeHtml(terminalPlate.title)}</h1><div>${escapeHtml(terminalPlate.subtitle)}</div><p>${escapeHtml(terminalPlate.caption)}</p>`;
+
+// The boot lockup keeps the emblem and the 万象 wordmark; its two caption lines become the terminal's
+// plate instead of the game's subtitle and English strapline.
+// The caption lines are also set larger and in the serif: at the lockup's scale the source's 27 and 16 unit
+// lines read at about 11 and 7 px in a 1440 window.
+export const bootLogo = logo
+  .replace(/<text([^>]*)>([^<]*)<\/text>/g, (whole, attributes: string, text: string) => {
+    if (text === subtitle) return `<text${attributes.replace(/font-size="[^"]*"/, 'font-size="36"').replace(/letter-spacing="[^"]*"/, 'letter-spacing="6"')}>${escapeHtml(terminalPlate.subtitle)}</text>`;
+    if (text === caption) return `<text${attributes.replace(/font-family="[^"]*"/, 'font-family="serif"').replace(/font-size="[^"]*"/, 'font-size="26"').replace(/letter-spacing="[^"]*"/, 'letter-spacing="3"').replace(/y="[^"]*"/, 'y="284"')}>${escapeHtml(terminalPlate.caption)}</text>`;
+    return whole;
+  });
+
+// The 万象终端 calibrating itself as it starts, in the machine's own terms: the sigil-held medium keeps
+// its state, spell power holds threshold and phase, and the line reaches the network. These describe
+// the instrument and its connection, not a player, account, authorization service or learning progress.
 export const bootCopy = {
-  access: "天工终端 · 暖机",
+  access: `${terminal} · 暖机`,
   identity: "咒印介质",
   identityDetail: "稳定",
   request: "相位校准",
-  processing: "接续万象网",
+  processing: "接入万象网",
   processingGlitch: "　　　万象网...",
-  permission: "校准完成",
-  welcome: title,
-  company: subtitle,
-  database: caption,
-  powered: `${title} · ${subtitle}`,
+  permission: "已接入",
+  welcome: networkText.title,
+  company: networkText.node,
+  database: networkText.place,
+  powered: `${terminal} · 新维港`,
 } as const;

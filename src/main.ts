@@ -48,7 +48,7 @@ let wallpaperEffects: WallpaperEffects | undefined;
 
 const $ = <T extends HTMLElement = HTMLElement>(selector: string) =>
   document.querySelector<T>(selector)!;
-import { logo, labelMarkSvg, brandHeading, bootCopy } from "./brand";
+import { logo, bootLogo, labelMarkSvg, brandHeading, bootCopy } from "./brand";
 
 document.documentElement.dataset.wanxiang = String(isWanxiang);
 const archiveName = isWanxiang ? "讲义" : "档案";
@@ -71,7 +71,7 @@ $("#stage").innerHTML = `
   ${isWanxiang ? "" : '<button id="skip" class="skip" data-action="skip">ENTER SYSTEM <span>↗</span></button>'}
   <section id="boot" class="boot" aria-label="系统启动">
     <div class="access-text">${escapeHtml(bootCopy.access)}</div>
-    <div class="boot-logo">${logo}</div>
+    <div class="boot-logo">${isWanxiang ? bootLogo : logo}</div>
     <div class="auth-status"><span>▪</span> <span id="auth-message"></span><i></i></div>
     <div class="scan"><svg viewBox="0 0 1920 1080" aria-hidden="true"><g fill="none" stroke="#080a08" stroke-width="2" stroke-linecap="round"><path/><path stroke="#fff"/><path/><path/><path/><path/><circle class="orbit-dot" r="8" fill="#ed821b" stroke="none"/><circle class="orbit-dot" r="8" fill="#ed821b" stroke="none"/><circle class="scan-core" cx="960" cy="540" r="5" fill="#080a08" stroke="none"/></g></svg><span>${escapeHtml(bootCopy.permission)}</span></div>
     <div class="welcome"><div class="welcome-panel"></div><div class="welcome-heading">${escapeHtml(bootCopy.welcome)}</div><div class="welcome-company"><strong>${escapeHtml(bootCopy.company)}</strong><strong class="welcome-highlight" aria-hidden="true">${escapeHtml(bootCopy.company)}</strong></div><div class="welcome-database">${escapeHtml(bootCopy.database)}</div><div class="welcome-logo">${isWanxiang ? labelMarkSvg : logo}</div></div>
@@ -81,7 +81,7 @@ $("#stage").innerHTML = `
   <section id="archive-ui" class="archive-ui" aria-label="${archiveName}选择">
     <div class="archive-callout"><div class="eyebrow">${archiveHeading} <span>／</span> <span id="archive-category">${escapeHtml(initialRecord.category)}</span></div><button class="file-title" ${isWanxiang ? "disabled" : 'data-action="open"'}>${fileNumberLabel}<span id="selected-id">${isWanxiang ? "NO." : "X-"}<span id="selected-code">001</span></span>${isWanxiang ? "" : '<span class="file-open">↗</span>'}</button><div class="callout-rule"><i></i></div><div class="file-summary"><span id="selected-title">${escapeHtml(initialRecord.title)}</span><span id="selected-clearance">${escapeHtml(isWanxiang ? initialRecord.duration ?? "" : initialRecord.clearance)}</span></div><button class="read-file" data-action="open"${isWanxiang ? ' hidden style="display:none"' : ""}>ACCESS FILE <span>→</span></button></div>
     <div id="hover-label" class="hover-label" hidden>${isWanxiang ? "NO." : "X-"}<span id="hover-code">001</span> / <span id="hover-title"></span></div>
-    <div class="archive-counter"><span class="tiny-label">${isWanxiang ? "讲义 / 当前课程" : "ARCHIVE / SELECT"}</span><div><span id="selected-number">01</span><i>/</i><span class="count-total">${columnFiles(0).length}</span></div></div>
+    <div class="archive-counter"><span class="tiny-label">${isWanxiang ? "本课程讲义" : "ARCHIVE / SELECT"}</span><div><span id="selected-number">01</span><i>/</i><span class="count-total">${columnFiles(0).length}</span></div></div>
     <div class="archive-navigation"${isWanxiang ? ' hidden style="display:none"' : ""}><button data-action="prev" aria-label="上一个档案">↑</button><div id="file-ticks" class="file-ticks"></div><button data-action="next" aria-label="下一个档案">↓</button></div>
     <div class="column-navigation"><button data-action="column-prev" aria-label="上一列"${isWanxiang ? ' hidden style="display:none"' : ""}>←</button><div><span id="column-number">${isWanxiang ? "课程" : "COLUMN"} <span id="column-index">01</span> / ${String(archiveColumns.length).padStart(2, "0")}</span><strong id="column-name">${escapeHtml(initialRecord.category)}</strong></div><button data-action="column-next" aria-label="下一列"${isWanxiang ? ' hidden style="display:none"' : ""}>→</button></div>
     <div class="archive-hint"${isWanxiang ? ' hidden style="display:none"' : ""}><kbd>←</kbd> <kbd>→</kbd> 切换列 <span>／</span> <kbd>↑</kbd> <kbd>↓</kbd> 前后档案 <span>／</span> <kbd>ENTER</kbd> 读取</div>
@@ -973,7 +973,7 @@ function bootFrame(t: number) {
   }
   $(".file-title").firstChild!.textContent =
     step === "array"
-      ? (isWanxiang ? "正在载入讲义…" : "SELECTING FILES...").slice(0, Math.max(0, Math.floor((t - 21.94) * 18)))
+      ? (isWanxiang ? "正在进入万象网…" : "SELECTING FILES...").slice(0, Math.max(0, Math.floor((t - 21.94) * 18)))
       : fileNumberLabel;
   $("#stage").style.setProperty(
     "--entry-opacity",

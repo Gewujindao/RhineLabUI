@@ -1,5 +1,5 @@
 import { bootMotion } from "./boot-motion";
-import { bootCopy, brandText } from "./brand";
+import { bootCopy, brandText, terminalPlate } from "./brand";
 import { themeAmount } from "./theme-ui";
 import { BootLettering } from "./boot-lettering";
 import { isWanxiang } from "./wallpaper";
@@ -126,7 +126,8 @@ export class BootSequence {
       el.replaceChildren(ink);
     });
     this.poweredHTML = this.el(".powered").innerHTML;
-    new BootLettering(this.brandLines[0]).setText(brandText.title);
+    // The corner plate names the terminal; brandText.title is the game's wordmark and stays on the logo.
+    new BootLettering(this.brandLines[0]).setText(isWanxiang ? terminalPlate.title : brandText.title);
     this.accessLettering = new BootLettering(this.el(".access-text"));
     this.authLettering = new BootLettering(this.el("#auth-message"));
     for (const [selector, text] of [
@@ -295,7 +296,8 @@ export class BootSequence {
     this.opacity(".scan > span", s.permissionOpacity);
     this.el(".scan > span").style.letterSpacing = `${s.scanTracking}px`;
     this.el(".scan > span").style.setProperty("--boot-phrase-tracking", `${s.scanTracking}px`);
-    this.el(".scan > span").style.fontSize = `${s.scanFont}px`;
+    // The ring's word is written each frame; in 万象 it is set half again larger so it reads at 1440.
+    this.el(".scan > span").style.fontSize = `${s.scanFont * (isWanxiang ? 1.5 : 1)}px`;
   }
   reset() {
     // Restore shared corner branding when skipping at any intermediate frame.
