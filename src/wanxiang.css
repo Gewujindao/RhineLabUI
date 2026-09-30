@@ -101,7 +101,7 @@
 [data-wanxiang="true"] .welcome-company { top: 100px; }
 [data-wanxiang="true"] .welcome-company strong { font-weight: 500; }
 /*
- * The card is the network and its node: 万象网 and 新维港节点. The academy and the date are already on the
+ * The card is the network and its node: 万象网 and Vancouver 节点. The academy and the date are already on the
  * corner plate at the same moment, so the source's third line is not shown and the emblem moves up to it.
  * The source's dark panel is not shown either: in a light sequence a dark card for under half a second reads
  * as a strobe, so the heading comes up out of the paper, warm ivory to warm ink (boot.ts).

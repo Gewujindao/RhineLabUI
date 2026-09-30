@@ -775,7 +775,7 @@ export class ArchiveScene {
     c.font = "32px MiSans";
     c.fillStyle = "#878476";
     // In 万象 the raised slat is an archive card of the network, not a course's lecture.
-    c.fillText(isWanxiang ? "新维港节点档案" : "INTERNAL DATABASE", 25, 174, 710);
+    c.fillText(isWanxiang ? "Vancouver 节点档案" : "INTERNAL DATABASE", 25, 174, 710);
     c.fillStyle = "#171713";
     c.font = "bold 130px MiSans";
     c.fillText("NO." + String(index + 1).padStart(3, "0"), 22, 360);
