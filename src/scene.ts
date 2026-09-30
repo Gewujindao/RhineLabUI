@@ -404,6 +404,11 @@ export class ArchiveScene {
         mat.roughness = 0.26;
         mat.metalness = 0.08;
       }
+      if (isWanxiang && name === "Titanium_Fasteners") {
+        // 万象: the fasteners are brass like the opening's rule and nameplate; cold titanium read as stray
+        // grey dots on the warm ivory boards. The array copy is cloned from this material below.
+        mat.color.set("#b8945a");
+      }
       configureInternalOptics(name, mat);
       if (name === "Carbon_Ink") continue;
       const selectedMesh = new THREE.Mesh(geom, mat);

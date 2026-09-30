@@ -91,7 +91,9 @@
   font-size: 32px;
   letter-spacing: 2px;
 }
-[data-wanxiang="true"] .auth-status { font-size: 30px; letter-spacing: 1px; }
+/* The status line follows the rule's end by a short gap (it read as a separate item 68px away) and moves
+   with the logo so the whole group is centred; the logo's share of the shift is in boot.ts. */
+[data-wanxiang="true"] .auth-status { left: calc(931px + 203px - 44px); font-size: 30px; letter-spacing: 1px; }
 [data-wanxiang="true"] .auth-status > span:first-child { display: none; }
 [data-wanxiang="true"] .scan > span { font-size: 40px; letter-spacing: 4px; }
 [data-wanxiang="true"] .welcome { top: 380px; }

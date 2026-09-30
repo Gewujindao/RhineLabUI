@@ -5,6 +5,19 @@ import { BootLettering } from "./boot-lettering";
 import { isWanxiang } from "./wallpaper";
 
 const ns = "http://www.w3.org/2000/svg";
+
+// 万象 mode: the Chinese status line is far shorter than the source's, so the settled logo-and-status group
+// sat about 200 design px left of centre. The logo keeps its centred start and slides a proportionally
+// shorter way, so emblem, lettering, rule and status end up centred together (the status moves in
+// wanxiang.css). Logo offsetX runs from 294 (centred) to -2 (settled) along the source's slide track.
+const WANXIANG_AUTH_SHIFT = 203;
+const LOGO_OFFSET_CENTRED = 294;
+const LOGO_OFFSET_SETTLED = -2;
+const logoShift = (offsetX: number) =>
+  isWanxiang
+    ? WANXIANG_AUTH_SHIFT *
+      Math.min(1, Math.max(0, (LOGO_OFFSET_CENTRED - offsetX) / (LOGO_OFFSET_CENTRED - LOGO_OFFSET_SETTLED)))
+    : 0;
 const arc = (r: number, start: number, sweep: number, x = 960, y = 540) => {
   const point = (a: number) => `${x + Math.cos(a) * r},${y + Math.sin(a) * r}`;
   if (sweep >= Math.PI * 1.999)
@@ -153,7 +166,7 @@ export class BootSequence {
     this.opacity(".access-text", s.accessOpacity);
     this.opacity(".boot-logo", s.logoOpacity);
     this.el(".boot-logo").style.transform =
-      `translate(${s.logo.offsetX}px, 1px)`;
+      `translate(${s.logo.offsetX + logoShift(s.logo.offsetX)}px, 1px)`;
     this.renderMark(s.logo);
     // Preserve the SVG text node once each revealed letter is in place. Replacing
     // it every frame invalidates glyph rasterization under the moving HUD.
